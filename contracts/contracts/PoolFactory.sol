@@ -59,5 +59,4 @@ contract PoolFactory {
         name
     );
 
-
-    }
+} }

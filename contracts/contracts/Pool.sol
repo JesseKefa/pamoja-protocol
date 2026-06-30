@@ -6,16 +6,16 @@ contract Pool {
     string public name;
     string public description;
     address public creator;
-}
 
 constructor (
     uint256 _id,
     string memory _name,
     string memory _description,
-    address _creator;
+    address _creator
 ) {
     id = _id;
     name = _name;
     description = _description;
     creator = _creator;
+    } 
 }
