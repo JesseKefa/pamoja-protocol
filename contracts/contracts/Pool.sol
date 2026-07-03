@@ -1,4 +1,4 @@
-  // SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
 contract Pool {
@@ -8,6 +8,12 @@ contract Pool {
     address public creator;
     address public admin;
     uint256 public memberCount;
+    uint256 public totalContributions;
+    uint256 public contributionAmount;
+
+    event JoinRequested(address indexed applicant);
+    event MemberApproved(address indexed applicant);
+    event ContributionMade(address indexed member, uint256 amount);
 
 struct Member {
     address wallet;
@@ -24,6 +30,7 @@ struct JoinRequest {
 
 mapping(address => Member) public members;
 mapping(address => JoinRequest) public joinRequests;
+mapping(address => uint256) public contributions;
 
 modifier onlyAdmin() {
     require(msg.sender == admin, "Only admin");
@@ -34,7 +41,8 @@ constructor (
     uint256 _id,
     string memory _name,
     string memory _description,
-    address _creator
+    address _creator,
+    uint256 _contributionAmount
 ) {
     id = _id;
     name = _name;
@@ -62,6 +70,7 @@ function applyToJoin() public {
         pending: true
     });
 
+    emit JoinRequested(msg.sender);
 }
 
 function approveMember(address applicant) public onlyAdmin {
@@ -73,9 +82,23 @@ function approveMember(address applicant) public onlyAdmin {
         isActive: true
     });
 
-    delete joinRequests[applicant];
+delete joinRequests[applicant];
 
-    memberCount++;
+memberCount++;
+
+emit MemberApproved(applicant);
 
     }
+
+function contribute() public payable {
+    require(members[msg.sender].isActive, "Not a member");
+    require(msg.value > 0, "Contribution must be greater than zero");
+    require(msg.value == conmtributionAmount, "Incorrect contribution amount");
+
+    contributions[msg.sender] += msg.value;
+    totalContributions += msg.value;
+
+    emit ContributionMade(msg.sender, msg.value);
+}
+
 }

@@ -16,6 +16,11 @@ describe("PoolFactory", function () {
     });
 
     it("should create a new community", async function () {
+
+        await poolFactory.createPool(
+        "Asili Chama",
+        "My first decentralized chama"
+    );
         
     });
 
