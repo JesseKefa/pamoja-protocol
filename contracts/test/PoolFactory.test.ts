@@ -16,11 +16,11 @@ describe("PoolFactory", function () {
     });
 
     it("should create a new community", async function () {
-
+        
     });
 
     it("should have the correct number of communities after creation", async function () {
-
+        
     });
 
 });

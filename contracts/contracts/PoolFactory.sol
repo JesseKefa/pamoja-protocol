@@ -69,6 +69,5 @@ contract PoolFactory {
         return pools[index];
     }
 
-    
 
 }
