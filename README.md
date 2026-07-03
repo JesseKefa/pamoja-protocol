@@ -1,4 +1,4 @@
-# 🌍 Pamoja Protocol
+# Pamoja Protocol
 
 > A decentralized community savings and lending protocol inspired by traditional Chamas.
 
@@ -6,7 +6,7 @@ Pamoja Protocol digitizes community-based savings groups by using smart contract
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 
 - Overview
 - Vision
@@ -22,7 +22,7 @@ Pamoja Protocol digitizes community-based savings groups by using smart contract
 
 ---
 
-# 🚀 Overview
+# Overview
 
 Traditional Chamas rely heavily on trust and manual record keeping.
 
@@ -36,15 +36,15 @@ Pamoja Protocol brings these communities on-chain by providing:
 
 ---
 
-# 🎯 Vision
+# Vision
 
 To become the infrastructure powering decentralized community finance across Africa and beyond.
 
 ---
 
-# ✨ Features
+# Features
 
-## ✅ Current
+## Current
 
 - Create community pools
 - Unique Pool IDs
@@ -55,7 +55,7 @@ To become the infrastructure powering decentralized community finance across Afr
 - Member counting
 - Event emission
 
-## 🚧 Upcoming
+## Upcoming
 
 - Contributions
 - Treasury management
@@ -68,7 +68,7 @@ To become the infrastructure powering decentralized community finance across Afr
 
 ---
 
-# 🛠 Tech Stack
+# Tech Stack
 
 - Solidity ^0.8.28
 - Hardhat 2
@@ -79,7 +79,7 @@ To become the infrastructure powering decentralized community finance across Afr
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text
 contracts/
@@ -99,7 +99,7 @@ hardhat.config.ts
 
 ---
 
-# ⚙️ Installation
+# Installation
 
 Clone the repository
 
@@ -133,7 +133,7 @@ npx hardhat test
 
 ---
 
-# 📚 Smart Contracts
+# Smart Contracts
 
 ## PoolFactory.sol
 
@@ -157,7 +157,7 @@ Responsible for:
 
 ---
 
-# 🔄 Example Workflow
+# Example Workflow
 
 ```text
 Alice creates a Pool
@@ -183,16 +183,16 @@ Bob becomes Member #2
 
 ---
 
-# 🗺 Development Roadmap
+# Development Roadmap
 
-## Sprint 1 ✅
+## Sprint 1 
 
 - Pool Factory
 - Pool Registry
 - Events
 - Pool Queries
 
-## Sprint 2 🚧
+## Sprint 2 
 
 - Membership System
 - Join Requests
@@ -219,7 +219,7 @@ Bob becomes Member #2
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 Contributions are welcome!
 
@@ -230,13 +230,13 @@ Contributions are welcome!
 
 ---
 
-# 📜 License
+# License
 
 MIT License.
 
 ---
 
-# 👨🏽‍💻 Author
+# Author
 
 Built with ❤️ by **JK**
 
