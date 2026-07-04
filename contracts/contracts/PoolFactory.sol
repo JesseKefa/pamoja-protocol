@@ -27,7 +27,8 @@ contract PoolFactory {
 
     function createPool(
     string memory name,
-    string memory description
+    string memory description,
+    uint256 contributionAmount
     ) public {
         uint256 poolId = nextPoolId;
 
@@ -35,7 +36,8 @@ contract PoolFactory {
         poolId,
         name,
         description,
-        msg.sender
+        msg.sender,
+        contributionAmount
     );
 
     pools.push(

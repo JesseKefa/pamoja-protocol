@@ -93,7 +93,7 @@ emit MemberApproved(applicant);
 function contribute() public payable {
     require(members[msg.sender].isActive, "Not a member");
     require(msg.value > 0, "Contribution must be greater than zero");
-    require(msg.value == conmtributionAmount, "Incorrect contribution amount");
+    require(msg.value == contributionAmount, "Incorrect contribution amount");
 
     contributions[msg.sender] += msg.value;
     totalContributions += msg.value;
