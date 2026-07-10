@@ -1,8 +1,15 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { localhost, sepolia } from "wagmi/chains";
+import { createConfig, http } from "wagmi";
+import { localhost } from "wagmi/chains";
+import { injected } from "wagmi/connectors";
 
-export const config = getDefaultConfig({
-  appName: "Pamoja Protocol",
-  projectId: "a8d64e2650a18aecdf97829460609f5b",
-  chains: [localhost, sepolia],
+export const config = createConfig({
+  chains: [localhost],
+
+  connectors: [
+    injected(),
+  ],
+
+  transports: {
+    [localhost.id]: http(),
+  },
 });
