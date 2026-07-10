@@ -12,6 +12,7 @@ contract PoolFactory {
         address poolAddress;
         uint256 createdAt;
         bool isActive;
+        uint256 contributionAmount;
      }
 
     PoolInfo[] public pools;
@@ -47,6 +48,7 @@ contract PoolFactory {
             description: description,
             creator: msg.sender,
             poolAddress: address(newPool),
+            contributionAmount: contributionAmount,
             createdAt: block.timestamp,
             isActive: true
     })
@@ -69,6 +71,10 @@ contract PoolFactory {
     function getPool(uint256 index) public view returns (PoolInfo memory) {
         require(index < pools.length, "Pool does not exist");
         return pools[index];
+    }
+
+    function getAllPools() public view returns (PoolInfo[] memory) {
+        return pools;
     }
 
 

@@ -49,6 +49,7 @@ constructor (
     description = _description;
     creator = _creator;
     admin = _creator;
+    contributionAmount = _contributionAmount;
 
     members[_creator] = Member({
         wallet: _creator,
