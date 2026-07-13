@@ -2,9 +2,12 @@
 
 import { useParams } from "next/navigation";
 import { formatEther } from "viem";
+import { useWriteContract } from "wagmi";
 
 import Navbar from "@/components/Navbar";
 import { usePool } from "@/hooks/usePool";
+
+import Pool from "@/contracts/Pool.json";
 
 export default function CommunityDetailPage() {
   const params = useParams();
@@ -12,6 +15,29 @@ export default function CommunityDetailPage() {
   const id = Number(params.id);
 
   const { pool, isLoading, error } = usePool(id);
+
+  const { writeContract } = useWriteContract({
+  mutation: {
+    onSuccess() {
+      alert("🎉 Join request submitted!");
+    },
+
+    onError(error) {
+      console.error(error);
+      alert("Transaction failed.");
+    },
+  },
+});
+
+  const handleJoin = () => {
+  if (!pool) return;
+
+  writeContract({
+    address: pool.poolAddress,
+    abi: Pool.abi,
+    functionName: "applyToJoin",
+  });
+};
 
   if (isLoading) {
     return (
@@ -60,7 +86,6 @@ export default function CommunityDetailPage() {
         <div className="grid gap-8 lg:grid-cols-4">
 
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
-
             <p className="text-sm text-slate-500">
               Monthly Contribution
             </p>
@@ -68,11 +93,9 @@ export default function CommunityDetailPage() {
             <h2 className="mt-2 text-3xl font-bold">
               {formatEther(pool.contributionAmount)} ETH
             </h2>
-
           </div>
 
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
-
             <p className="text-sm text-slate-500">
               Creator
             </p>
@@ -81,11 +104,9 @@ export default function CommunityDetailPage() {
               {pool.creator.slice(0, 6)}...
               {pool.creator.slice(-4)}
             </h2>
-
           </div>
 
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
-
             <p className="text-sm text-slate-500">
               Created
             </p>
@@ -95,11 +116,9 @@ export default function CommunityDetailPage() {
                 Number(pool.createdAt) * 1000
               ).toLocaleDateString()}
             </h2>
-
           </div>
 
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
-
             <p className="text-sm text-slate-500">
               Status
             </p>
@@ -107,83 +126,88 @@ export default function CommunityDetailPage() {
             <h2 className="mt-2 font-semibold text-emerald-600">
               Active
             </h2>
-
           </div>
 
         </div>
 
-      </main>
+        {/* ACTIONS */}
 
-    <section className="mt-16">
+        <section className="mt-16">
 
-        <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4">
 
             <button
-            className="
-                rounded-xl
-                bg-[#1F4D36]
-                px-8
-                py-4
-                font-semibold
-                text-white
-                transition
-                hover:scale-105
-            "
+              onClick={handleJoin}
+              className="rounded-xl bg-[#1F4D36] px-8 py-4 font-semibold text-white transition hover:scale-105"
             >
-            Join Community
+              Join Community
             </button>
 
             <button
-            className="
-                rounded-xl
-                border
-                border-slate-300
-                bg-white
-                px-8
-                py-4
-                font-semibold
-                transition
-                hover:bg-slate-100
-            "
+              className="rounded-xl border border-slate-300 bg-white px-8 py-4 font-semibold transition hover:bg-slate-100"
             >
-            Contribute
+              Contribute
             </button>
 
-        </div>
+          </div>
 
-    </section>
+        </section>
 
-    <section className="mt-20">
+        {/* ABOUT */}
 
-        <h2 className="text-3xl font-bold">
+        <section className="mt-20">
+
+          <h2 className="text-3xl font-bold">
             About this Community
-        </h2>
+          </h2>
 
-        <div className="mt-8 rounded-3xl border bg-white p-8">
+          <div className="mt-8 rounded-3xl border bg-white p-8">
 
             <p className="leading-8 text-slate-600">
-            {pool.description}
+              {pool.description}
             </p>
 
-        </div>
+          </div>
 
-    </section>
+        </section>
 
-    <section className="mt-20 mb-24">
+        {/* MEMBERS */}
 
-        <h2 className="text-3xl font-bold">
-            Recent Activity
-        </h2>
+        <section className="mt-20">
 
-        <div className="mt-8 rounded-3xl border bg-white p-8">
+          <h2 className="text-3xl font-bold">
+            Members
+          </h2>
+
+          <div className="mt-8 rounded-3xl border bg-white p-8">
 
             <p className="text-slate-500">
-            No activity yet.
+              Member list coming soon...
             </p>
 
-        </div>
+          </div>
 
-    </section>
+        </section>
+
+        {/* ACTIVITY */}
+
+        <section className="mt-20 mb-24">
+
+          <h2 className="text-3xl font-bold">
+            Recent Activity
+          </h2>
+
+          <div className="mt-8 rounded-3xl border bg-white p-8">
+
+            <p className="text-slate-500">
+              No activity yet.
+            </p>
+
+          </div>
+
+        </section>
+
+      </main>
 
     </>
   );

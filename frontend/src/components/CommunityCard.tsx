@@ -51,7 +51,7 @@ export default function CommunityCard({ pool }: any) {
       </div>
 
       <Link
-        href={`/community/${pool.poolAddress}`}
+        href={`/communities/${Number(pool.id)}`}
         className="mt-8 block"
       >
         <Button className="w-full">

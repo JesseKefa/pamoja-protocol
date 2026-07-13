@@ -131,7 +131,7 @@ export default function FeaturedCommunities() {
                 </div>
 
                 <Link
-                  href={`/communities/${pool.id}`}
+                  href={`/communities/${Number(pool.id)}`}
                   className="mt-10 inline-flex font-semibold text-[#1F4D36]"
                 >
                   View Community →

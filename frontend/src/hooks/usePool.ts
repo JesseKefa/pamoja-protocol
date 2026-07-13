@@ -7,7 +7,7 @@ export function usePool(id: number) {
   const { data, isLoading, error, refetch } = useReadContract({
     address: POOL_FACTORY_ADDRESS,
     abi: PoolFactory.abi,
-    functionName: "getPool",
+    functionName: "getPoolById",
     args: [BigInt(id)],
   });
 

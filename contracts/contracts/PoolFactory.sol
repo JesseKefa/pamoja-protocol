@@ -68,9 +68,10 @@ contract PoolFactory {
         return pools.length;
     }
 
-    function getPool(uint256 index) public view returns (PoolInfo memory) {
-        require(index < pools.length, "Pool does not exist");
-        return pools[index];
+    function getPoolById(uint256 id) public view returns (PoolInfo memory) {
+        require(id > 0 && id < nextPoolId, "Pool does not exist");
+
+        return pools[id - 1];
     }
 
     function getAllPools() public view returns (PoolInfo[] memory) {
