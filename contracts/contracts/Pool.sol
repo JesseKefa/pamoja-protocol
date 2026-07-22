@@ -102,4 +102,8 @@ function contribute() public payable {
     emit ContributionMade(msg.sender, msg.value);
 }
 
+function hasPendingRequest(address user) public view returns (bool) {
+    return joinRequests[user].pending;
+}
+
 }

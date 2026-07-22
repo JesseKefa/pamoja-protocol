@@ -16,15 +16,24 @@ export default function CommunityDetailPage() {
 
   const { pool, isLoading, error } = usePool(id);
 
+  console.log("POOL OBJECT:", pool);
+
   const { writeContract } = useWriteContract({
   mutation: {
     onSuccess() {
-      alert("🎉 Join request submitted!");
+      alert("🎉 Transaction submitted successfully!");
     },
 
     onError(error) {
       console.error(error);
-      alert("Transaction failed.");
+
+      if (error.message.includes("Not a member")) {
+        alert("You must be approved before contributing.");
+      } else if (error.message.includes("Incorrect contribution amount")) {
+        alert("Incorrect contribution amount.");
+      } else {
+        alert("Transaction failed.");
+      }
     },
   },
 });
@@ -83,7 +92,8 @@ export default function CommunityDetailPage() {
 
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
 
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <p className="text-sm text-slate-500">
@@ -122,11 +132,35 @@ export default function CommunityDetailPage() {
             <p className="text-sm text-slate-500">
               Status
             </p>
-
+            
             <h2 className="mt-2 font-semibold text-emerald-600">
               Active
             </h2>
           </div>
+
+
+          <div className="rounded-3xl border bg-white p-8 shadow-sm">
+            <p className="text-sm text-slate-500">
+              Treasury
+            </p>
+
+            <h2 className="mt-2 text-3xl font-bold">
+              {formatEther(pool.totalContributions)} ETH
+            </h2>
+          </div>  
+
+          <div className="rounded-3xl border bg-white p-8 shadow-sm">
+            <p className="text-sm text-slate-500">
+              Members
+            </p>
+
+            <h2 className="mt-2 text-3xl font-bold">
+              {Number(pool.memberCount)}
+            </h2>
+          </div>
+
+
+            
 
         </div>
 
@@ -144,6 +178,14 @@ export default function CommunityDetailPage() {
             </button>
 
             <button
+              onClick={() => {
+                writeContract({
+                  address: pool.poolAddress,
+                  abi: Pool.abi,
+                  functionName: "contribute",
+                  value: pool.contributionAmount,
+                });
+              }}
               className="rounded-xl border border-slate-300 bg-white px-8 py-4 font-semibold transition hover:bg-slate-100"
             >
               Contribute
