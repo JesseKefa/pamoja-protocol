@@ -1,63 +1,80 @@
 import Link from "next/link";
-import Card from "./ui/Card";
-import Button from "./ui/Button";
+
 import Badge from "./ui/Badge";
+import Button from "./ui/Button";
+import Card from "./ui/Card";
 
 export default function CommunityCard({ pool }: any) {
   return (
     <Card>
 
-      <div className="flex items-center justify-between">
+      {/* Header */}
 
-        <h2 className="text-2xl font-bold text-slate-900">
-          {pool.name}
-        </h2>
+      <div className="flex items-start justify-between">
+
+        <div>
+
+          <h2 className="text-2xl font-bold text-[#1F2937]">
+            {pool.name}
+          </h2>
+
+          <p className="mt-3 max-w-sm leading-7 text-slate-600">
+            {pool.description}
+          </p>
+
+        </div>
 
         <Badge>Active</Badge>
 
       </div>
 
-      <p className="mt-4 text-slate-500">
-        {pool.description}
-      </p>
+      {/* Divider */}
 
-      <div className="mt-8 space-y-3 text-sm">
+      <div className="my-10 h-px bg-[#ECE8E1]" />
 
-        <div className="flex justify-between">
+      {/* Stats */}
 
-          <span className="text-slate-500">
+      <div className="grid grid-cols-2 gap-8">
+
+        <div>
+
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
             Monthly
-          </span>
+          </p>
 
-          <span className="font-semibold">
+          <p className="mt-2 text-2xl font-bold text-[#1F4D36]">
             {Number(pool.contributionAmount) / 1e18} ETH
-          </span>
+          </p>
 
         </div>
 
-        <div className="flex justify-between">
+        <div>
 
-          <span className="text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
             Creator
-          </span>
+          </p>
 
-          <span className="font-medium">
+          <p className="mt-2 font-semibold text-slate-700">
             {pool.creator.slice(0, 6)}...
             {pool.creator.slice(-4)}
-          </span>
+          </p>
 
         </div>
 
       </div>
 
-      <Link
-        href={`/communities/${Number(pool.id)}`}
-        className="mt-8 block"
-      >
-        <Button className="w-full">
+      {/* Footer */}
+
+      <div className="mt-12">
+
+        <Button
+          href={`/communities/${Number(pool.id)}`}
+          className="w-full"
+        >
           View Community
         </Button>
-      </Link>
+
+      </div>
 
     </Card>
   );

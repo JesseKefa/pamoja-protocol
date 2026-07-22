@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
+
 import "./globals.css";
+
 import Web3Provider from "@/providers/Web3Provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-body",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const manrope = Manrope({
   subsets: ["latin"],
+  variable: "--font-heading",
 });
 
 export const metadata: Metadata = {
   title: "Pamoja Protocol",
-  description: "Decentralized Chama Protocol",
+  description: "Community Finance for Africa",
 };
 
 export default function RootLayout({
@@ -25,13 +27,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`
+          ${inter.variable}
+          ${manrope.variable}
+          bg-[#F8F5F0]
+          text-[#1F2937]
+          antialiased
+        `}
       >
         <Web3Provider>
           {children}
         </Web3Provider>
       </body>
+
     </html>
   );
 }
