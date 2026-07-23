@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function QuickActions() {
   return (
-    <section className="mb-20">
+    <section className="mb-24">
 
       <h2 className="mb-6 text-3xl font-black">
         Quick Actions

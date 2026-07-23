@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { formatEther } from "viem";
 
@@ -7,118 +9,143 @@ export default function MyCommunities() {
   const { communities } = useMyCommunities();
 
   return (
-    <section className="mb-14">
+    <section className="mt-16">
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between">
 
-        <h2 className="text-3xl font-black">
-          My Communities
-        </h2>
+        <div>
+          <h2 className="text-3xl font-black">
+            My Communities
+          </h2>
 
-        <Link
-          href="/communities"
-          className="
-            font-semibold
-            text-[#1F4D36]
-            hover:underline
-          "
-        >
-          Browse Communities
-        </Link>
+          <p className="mt-2 text-slate-500">
+            Communities you belong to.
+          </p>
+        </div>
 
       </div>
 
-      <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
+      {communities.length === 0 ? (
 
-        {communities.length === 0 ? (
+        <div className="rounded-3xl border bg-white p-12 text-center shadow-sm">
 
-          <div className="p-12 text-center">
+          <h3 className="text-xl font-bold">
+            No communities yet
+          </h3>
 
-            <h3 className="text-xl font-semibold">
-              You're not part of any communities yet
-            </h3>
+          <p className="mt-3 text-slate-500">
+            Join an existing community or create your own.
+          </p>
 
-            <p className="mt-3 text-slate-500">
-              Join an existing community or create one to begin saving.
-            </p>
+          <Link
+            href="/communities"
+            className="
+              mt-8
+              inline-flex
+              rounded-xl
+              bg-[#1F4D36]
+              px-6
+              py-3
+              font-semibold
+              text-white
+              transition
+              hover:opacity-90
+            "
+          >
+            Browse Communities
+          </Link>
 
-            <Link
-              href="/communities"
-              className="
-                mt-8
-                inline-flex
-                rounded-xl
-                bg-[#1F4D36]
-                px-6
-                py-3
-                font-semibold
-                text-white
-                transition
-                hover:scale-105
-              "
-            >
-              Explore Communities
-            </Link>
+        </div>
 
-          </div>
+      ) : (
 
-        ) : (
+        <div className="grid gap-6 md:grid-cols-2">
 
-          communities.map((community) => (
+          {communities.map((community) => (
 
             <div
               key={community.id}
               className="
-                flex
-                items-center
-                justify-between
-                border-b
-                px-8
-                py-6
-                last:border-b-0
+                rounded-3xl
+                border
+                bg-white
+                p-8
+                shadow-sm
+                transition
+                hover:-translate-y-1
+                hover:shadow-lg
               "
             >
 
-              <div>
+              <div className="flex items-start justify-between">
 
-                <h3 className="text-lg font-semibold">
-                  {community.name}
-                </h3>
+                <div>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  {community.members} members
-                </p>
+                  <h3 className="text-2xl font-bold">
+                    {community.name}
+                  </h3>
+
+                  <p className="mt-2 text-sm text-slate-500">
+                    Community #{community.id}
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="mt-8 grid grid-cols-2 gap-6">
+
+                <div>
+
+                  <p className="text-sm text-slate-500">
+                    Treasury
+                  </p>
+
+                  <p className="mt-2 text-2xl font-black text-[#1F4D36]">
+                    {formatEther(community.treasury)} ETH
+                  </p>
+
+                </div>
+
+                <div>
+
+                  <p className="text-sm text-slate-500">
+                    Members
+                  </p>
+
+                  <p className="mt-2 text-2xl font-black">
+                    {community.members}
+                  </p>
+
+                </div>
 
               </div>
 
-              <div className="text-right">
-
-                <p className="font-semibold">
-                  {formatEther(community.treasury)} ETH
-                </p>
-
-                <Link
-                  href={`/communities/${community.id}`}
-                  className="
-                    mt-2
-                    inline-block
-                    text-sm
-                    font-semibold
-                    text-[#1F4D36]
-                  "
-                >
-                  Open Community
-                </Link>
-
-              </div>
+              <Link
+                href={`/communities/${community.id}`}
+                className="
+                  mt-10
+                  flex
+                  items-center
+                  justify-center
+                  rounded-xl
+                  border
+                  py-3
+                  font-semibold
+                  transition
+                  hover:bg-[#F8F5F0]
+                "
+              >
+                Open Community →
+              </Link>
 
             </div>
 
-          ))
+          ))}
 
-        )}
+        </div>
 
-      </div>
+      )}
 
     </section>
   );

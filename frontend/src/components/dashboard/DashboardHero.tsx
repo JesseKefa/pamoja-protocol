@@ -26,7 +26,9 @@ export default function DashboardHero() {
       </h1>
 
       <p className="mt-4 text-lg text-slate-600">
-        Welcome back to Pamoja Protocol.
+        Manage your communities, monitor your contributions and stay connected with your savings groups.
+        
+        
       </p>
 
       <div

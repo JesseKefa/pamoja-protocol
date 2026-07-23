@@ -1,28 +1,32 @@
+"use client";
+
+import { useDashboardSummary } from "@/hooks/useDashboardSummary";
+
 export default function DashboardSummary() {
+  const summary = useDashboardSummary();
+
   const cards = [
     {
       title: "Communities",
-      value: "--",
+      value: summary.communities,
     },
     {
       title: "Total Saved",
-      value: "-- ETH",
+      value: `${summary.totalSaved} ETH`,
     },
     {
       title: "Pending Applications",
-      value: "--",
+      value: summary.pendingApplications,
     },
     {
       title: "Monthly Contributions",
-      value: "-- ETH",
+      value: `${summary.monthlyCommitment} ETH`,
     },
   ];
 
   return (
     <section className="mb-14">
-
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-
         {cards.map((card) => (
           <div
             key={card.title}
@@ -43,9 +47,7 @@ export default function DashboardSummary() {
             </h2>
           </div>
         ))}
-
       </div>
-
     </section>
   );
 }
