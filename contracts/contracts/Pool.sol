@@ -27,12 +27,27 @@ contract Pool {
         bool pending;
     }
 
+    struct PoolStats {
+        uint256 memberCount;
+        uint256 treasury;
+        uint256 contributionAmount;
+    }
+
+    struct Activity {
+        string action;
+        address user;
+        uint256 amount;
+        uint256 timestamp;
+    }
+
     mapping(address => Member) public members;
     mapping(address => JoinRequest) public joinRequests;
     mapping(address => uint256) public contributions;
 
-    // NEW: Keep track of pending applicants
+    address[] public memberAddresses;
     address[] public pendingApplicants;
+
+    Activity[] public activities;
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin");
@@ -59,8 +74,14 @@ contract Pool {
             isActive: true
         });
 
+        memberAddresses.push(_creator);
+
         memberCount = 1;
     }
+
+    // ============================================================
+    // WRITE FUNCTIONS
+    // ============================================================
 
     function applyToJoin() public {
         require(!members[msg.sender].isActive, "Already a member");
@@ -74,11 +95,21 @@ contract Pool {
 
         pendingApplicants.push(msg.sender);
 
+        activities.push(
+            Activity({
+                action: "Join Request",
+                user: msg.sender,
+                amount: 0,
+                timestamp: block.timestamp
+            })
+        );
+
         emit JoinRequested(msg.sender);
     }
 
     function approveMember(address applicant) public onlyAdmin {
         require(joinRequests[applicant].pending, "No pending application");
+        require(!members[applicant].isActive, "Already approved");
 
         members[applicant] = Member({
             wallet: applicant,
@@ -86,20 +117,29 @@ contract Pool {
             isActive: true
         });
 
+        memberAddresses.push(applicant);
+
         delete joinRequests[applicant];
 
         memberCount++;
 
-        // Remove applicant from pending list
         for (uint256 i = 0; i < pendingApplicants.length; i++) {
             if (pendingApplicants[i] == applicant) {
-                pendingApplicants[i] = pendingApplicants[
-                    pendingApplicants.length - 1
-                ];
+                pendingApplicants[i] =
+                    pendingApplicants[pendingApplicants.length - 1];
                 pendingApplicants.pop();
                 break;
             }
         }
+
+        activities.push(
+            Activity({
+                action: "Member Approved",
+                user: applicant,
+                amount: 0,
+                timestamp: block.timestamp
+            })
+        );
 
         emit MemberApproved(applicant);
     }
@@ -114,19 +154,36 @@ contract Pool {
         contributions[msg.sender] += msg.value;
         totalContributions += msg.value;
 
+        activities.push(
+            Activity({
+                action: "Contribution",
+                user: msg.sender,
+                amount: msg.value,
+                timestamp: block.timestamp
+            })
+        );
+
         emit ContributionMade(msg.sender, msg.value);
     }
 
-    function hasPendingRequest(address user) public view returns (bool) {
-        return joinRequests[user].pending;
+    // ============================================================
+    // VIEW FUNCTIONS
+    // ============================================================
+
+    function isMember(address user)
+        public
+        view
+        returns (bool)
+    {
+        return members[user].isActive;
     }
 
-    // ============================
-    // VIEW FUNCTIONS
-    // ============================
-
-    function isMember(address user) public view returns (bool) {
-        return members[user].isActive;
+    function hasPendingRequest(address user)
+        public
+        view
+        returns (bool)
+    {
+        return joinRequests[user].pending;
     }
 
     function getPendingApplicants()
@@ -137,7 +194,85 @@ contract Pool {
         return pendingApplicants;
     }
 
-    function getTreasuryBalance() public view returns (uint256) {
-        return totalContributions;
+    function getMembers()
+        public
+        view
+        returns (address[] memory)
+    {
+        return memberAddresses;
+    }
+
+    function getActivities()
+        public
+        view
+        returns (Activity[] memory)
+    {
+        return activities;
+    }
+
+    function getContribution(address user)
+        public
+        view
+        returns (uint256)
+    {
+        return contributions[user];
+    }
+
+    function getTreasuryBalance()
+        public
+        view
+        returns (uint256)
+    {
+        return address(this).balance;
+    }
+
+    function getPoolInfo()
+        public
+        view
+        returns (
+            uint256,
+            string memory,
+            string memory,
+            address,
+            uint256,
+            uint256
+        )
+    {
+        return (
+            id,
+            name,
+            description,
+            creator,
+            contributionAmount,
+            memberCount
+        );
+    }
+
+    function getPoolStats()
+        public
+        view
+        returns (PoolStats memory)
+    {
+        return PoolStats({
+            memberCount: memberCount,
+            treasury: address(this).balance,
+            contributionAmount: contributionAmount
+        });
+    }
+
+    function getMemberInfo(address user)
+        public
+        view
+        returns (
+            bool isActive,
+            uint256 totalSaved,
+            bool pending
+        )
+    {
+        return (
+            members[user].isActive,
+            contributions[user],
+            joinRequests[user].pending
+        );
     }
 }

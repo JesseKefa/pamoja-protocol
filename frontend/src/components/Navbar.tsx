@@ -62,8 +62,7 @@ export default function Navbar() {
             {[
               ["Home", "/"],
               ["Communities", "/communities"],
-              ["Create", "/create"],
-              ["Dashboard", "/dashboard"],
+              ["Create", "/create"]
             ].map(([label, href]) => (
               <Link
                 key={label}

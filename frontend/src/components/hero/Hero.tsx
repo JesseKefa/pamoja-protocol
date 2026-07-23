@@ -7,7 +7,7 @@ import Button from "../ui/Button";
 
 import HeroBackground from "./HeroBackground";
 import HeroIllustration from "./HeroIllustration";
-import HeroTrustBar from "./HeroTrustBar";
+import HeroStats from "./HeroStats";
 
 export default function Hero() {
   return (
@@ -21,11 +21,9 @@ export default function Hero() {
         overflow-hidden
       "
     >
-
       <HeroBackground />
 
       <Container>
-
         <div
           className="
             relative
@@ -38,13 +36,10 @@ export default function Hero() {
             lg:gap-24
           "
         >
-
           {/* LEFT */}
 
           <FadeIn>
-
             <div className="max-w-2xl">
-
               <div
                 className="
                   inline-flex
@@ -60,32 +55,32 @@ export default function Hero() {
                   text-[#B8860B]
                 "
               >
-                Community Finance for Africa
+                Built for African Communities
               </div>
-
 
               <h1
                 className="
-                  mt-6
+                  mt-8
                   text-5xl
                   font-black
-                  leading-[0.95]
+                  leading-[0.9]
                   tracking-tight
                   text-[#1F2937]
                   lg:text-7xl
                 "
               >
-                Communities
+                Save Together.
                 <br />
-                Build Wealth.
+                Grow Together.
                 <br />
-                Together.
+                <span className="text-[#1F4D36]">
+                  Rise Together.
+                </span>
               </h1>
-
 
               <p
                 className="
-                  mt-6
+                  mt-8
                   max-w-xl
                   text-lg
                   leading-8
@@ -93,17 +88,17 @@ export default function Hero() {
                   lg:text-xl
                 "
               >
-                Pamoja empowers savings groups,
-                cooperatives and investment clubs with
-                transparent, secure and decentralized
-                financial infrastructure designed for Africa.
+                From neighborhood chamas to investment clubs and
+                cooperatives, Pamoja helps communities save,
+                govern and grow together through transparent
+                on-chain finance.
               </p>
 
+              <HeroStats />
 
-              <div className="mt-8 flex flex-wrap gap-5">
-
+              <div className="mt-10 flex flex-wrap gap-4">
                 <Button href="/create">
-                  Start a Community
+                  Create Your Chama
                 </Button>
 
                 <Button
@@ -112,30 +107,23 @@ export default function Hero() {
                 >
                   Explore Communities
                 </Button>
-
               </div>
 
-
-              <HeroTrustBar />
-
+              <div className="mt-8 flex flex-wrap gap-6 text-sm font-medium text-slate-500">
+                <div>✓ Self Custodied</div>
+                <div>✓ Transparent</div>
+                <div>✓ Community Governed</div>
+              </div>
             </div>
-
           </FadeIn>
-
 
           {/* RIGHT */}
 
           <FadeIn>
-
             <HeroIllustration />
-
           </FadeIn>
-
-
         </div>
-
       </Container>
-
     </section>
   );
 }

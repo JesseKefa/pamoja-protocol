@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
+import { Toaster } from "sonner";
 
 import "./globals.css";
 
@@ -27,7 +28,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-
       <body
         className={`
           ${inter.variable}
@@ -39,9 +39,17 @@ export default function RootLayout({
       >
         <Web3Provider>
           {children}
+
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            toastOptions={{
+              duration: 4000,
+            }}
+          />
         </Web3Provider>
       </body>
-
     </html>
   );
 }

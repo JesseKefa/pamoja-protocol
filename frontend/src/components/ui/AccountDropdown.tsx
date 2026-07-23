@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useDisconnect } from "wagmi";
+import { useRouter } from "next/navigation";
 
 interface Props {
   address: `0x${string}` | undefined;
@@ -15,6 +16,7 @@ export default function AccountDropdown({
   onClose,
 }: Props) {
   const { disconnect } = useDisconnect();
+  const router = useRouter();
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -82,6 +84,10 @@ export default function AccountDropdown({
       <div className="py-2">
 
         <button
+          onClick={() => {
+            router.push("/dashboard");
+            onClose();
+          }}
           className="
             flex
             w-full

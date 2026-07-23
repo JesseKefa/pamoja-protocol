@@ -2,12 +2,15 @@
 
 import { useParams } from "next/navigation";
 import { useAccount, useWriteContract } from "wagmi";
+import { toast } from "sonner";
 
 import Navbar from "@/components/Navbar";
 
 import { usePool } from "@/hooks/usePool";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { usePendingApplicants } from "@/hooks/usePendingApplicants";
+import { useMembers } from "@/hooks/useMembers";
+import { usePoolEvents } from "@/hooks/usePoolEvents";
 
 import Pool from "@/contracts/Pool.json";
 
@@ -27,36 +30,75 @@ export default function CommunityDetailPage() {
 
   const { pool, isLoading, error } = usePool(id);
 
-  const {
-    memberCount,
-    totalContributions,
-  } = usePoolStats(pool?.poolAddress as `0x${string}`);
+  const poolStats = usePoolStats(
+    pool?.poolAddress as `0x${string}`
+  );
 
   const {
-    applicants,
-  } = usePendingApplicants(pool?.poolAddress as `0x${string}`);
+    memberCount,
+    treasury,
+    isMember,
+    hasPendingRequest,
+  } = poolStats;
+
+  const pending = usePendingApplicants(
+    pool?.poolAddress as `0x${string}`
+  );
+
+  const { applicants } = pending;
+
+  const membersHook = useMembers(
+    pool?.poolAddress as `0x${string}`
+  );
+
+  const { members } = membersHook;
+
+  const events = usePoolEvents(
+    pool?.poolAddress as `0x${string}`
+  );
+
+  const { activities } = events;
 
   const { writeContract } = useWriteContract({
     mutation: {
-      onSuccess() {
-        alert("🎉 Transaction submitted!");
+      async onSuccess() {
+        toast.success("Transaction confirmed.");
+
+        await Promise.all([
+          poolStats.refetch(),
+          pending.refetch(),
+          membersHook.refetch(),
+          events.refetch(),
+        ]);
       },
 
       onError(error) {
         console.error(error);
 
         if (error.message.includes("Already a member")) {
-          alert("You are already a member.");
+          toast.error("You are already a member.");
         } else if (
           error.message.includes("Already applied")
         ) {
-          alert("You already have a pending request.");
+          toast.error(
+            "You already have a pending application."
+          );
         } else if (
           error.message.includes("Not a member")
         ) {
-          alert("You must be approved first.");
+          toast.error(
+            "You must first become a member."
+          );
+        } else if (
+          error.message.includes(
+            "Incorrect contribution amount"
+          )
+        ) {
+          toast.error(
+            "Incorrect contribution amount."
+          );
         } else {
-          alert("Transaction failed.");
+          toast.error("Transaction failed.");
         }
       },
     },
@@ -124,11 +166,14 @@ export default function CommunityDetailPage() {
 
         <CommunityStats
           pool={pool}
-          treasury={totalContributions}
+          treasury={treasury}
           memberCount={memberCount}
         />
 
         <CommunityActions
+          isAdmin={address === pool.creator}
+          isMember={isMember}
+          hasPendingRequest={hasPendingRequest}
           onJoin={handleJoin}
           onContribute={handleContribute}
         />
@@ -139,9 +184,14 @@ export default function CommunityDetailPage() {
           onApprove={handleApprove}
         />
 
-        <MemberList />
+        <MemberList
+          members={members}
+          admin={pool.creator}
+        />
 
-        <ActivityFeed />
+        <ActivityFeed
+          activities={activities}
+        />
 
       </main>
     </>

@@ -3,9 +3,10 @@
 import Navbar from "@/components/Navbar";
 
 import DashboardHero from "@/components/dashboard/DashboardHero";
-import DashboardStats from "@/components/dashboard/DashboardStats";
-import CommunityList from "@/components/dashboard/CommunityList";
-import DashboardActivity from "@/components/dashboard/DashboardActivity";
+import DashboardSummary from "@/components/dashboard/DashboardSummary";
+import MyCommunities from "@/components/dashboard/MyCommunities";
+import PendingApplications from "@/components/dashboard/PendingApplications";
+import QuickActions from "@/components/dashboard/QuickActions";
 
 export default function DashboardPage() {
   return (
@@ -16,11 +17,13 @@ export default function DashboardPage() {
 
         <DashboardHero />
 
-        <DashboardStats />
+        <DashboardSummary />
 
-        <CommunityList />
+        <MyCommunities />
 
-        <DashboardActivity />
+        <PendingApplications />
+
+        <QuickActions />
 
       </main>
     </>

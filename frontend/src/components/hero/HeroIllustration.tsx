@@ -1,6 +1,8 @@
 "use client";
 
 import Floating from "@/components/animations/Floating";
+import BasketRing from "./BasketRing";
+
 import {
   Landmark,
   ShieldCheck,
@@ -55,23 +57,25 @@ export default function HeroIllustration() {
   return (
     <div className="relative mx-auto h-[560px] w-[560px]">
 
-      {/* Outer Ring */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-[480px] w-[480px] rounded-full border border-[#DCCFB7]/30" />
-      </div>
+      {/* Woven Rings */}
 
-      {/* Middle Ring */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-[340px] w-[340px] rounded-full border border-[#DCCFB7]/25" />
-      </div>
+      <BasketRing
+        size={480}
+        opacity={0.30}
+      />
 
-      {/* Inner Ring */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-[220px] w-[220px] rounded-full border border-[#DCCFB7]/20" />
-      </div>
+      <BasketRing
+        size={340}
+        opacity={0.22}
+      />
 
+      <BasketRing
+        size={220}
+        opacity={0.16}
+      />
 
-      {/* Connecting Lines */}
+      {/* Connection Lines */}
+
       <svg
         className="absolute inset-0 h-full w-full"
         viewBox="0 0 560 560"
@@ -97,61 +101,76 @@ export default function HeroIllustration() {
               stroke="#C79A3B"
               strokeOpacity="0.08"
               strokeWidth="1.2"
+              strokeDasharray="5 6"
             />
           );
         })}
       </svg>
 
+      {/* Center */}
 
-      {/* Center Logo */}
-      <Floating duration={10} distance={5}>
-        
-        
+      <Floating
+        duration={10}
+        distance={5}
+      >
+        <div
+          className="
+            absolute
+            left-[280px]
+            top-[280px]
+            z-50
+            flex
+            h-36
+            w-36
+            -translate-x-1/2
+            -translate-y-1/2
+            items-center
+            justify-center
+            rounded-full
+            bg-[#1F4D36]
+            shadow-[0_20px_60px_rgba(31,77,54,0.35)]
+          "
+        >
+          {/* Inner Ring */}
 
-<div
-  className="
-    absolute
-    left-[280px]
-    top-[280px]
-    z-50
-    flex
-    h-36
-    w-36
-    -translate-x-1/2
-    -translate-y-1/2
-    items-center
-    justify-center
-    rounded-full
-    bg-[#1F4D36]
-    shadow-[0_20px_60px_rgba(31,77,54,0.35)]
-  "
->
-  <div
-    className="
-      absolute
-      inset-2
-      rounded-full
-      border
-      border-[#DCCFB7]/40
-    "
-  />
+          <div
+            className="
+              absolute
+              inset-2
+              rounded-full
+              border
+              border-[#DCCFB7]/40
+            "
+          />
 
-  <span
-    className="
-      relative
-      text-6xl
-      font-black
-      tracking-tight
-      text-white
-    "
-  >
-    P
-  </span>
-</div>
+          {/* Gold Glow */}
+
+          <div
+            className="
+              absolute
+              h-44
+              w-44
+              rounded-full
+              bg-[#C79A3B]/10
+              blur-2xl
+            "
+          />
+
+          <span
+            className="
+              relative
+              text-6xl
+              font-black
+              text-white
+            "
+          >
+            P
+          </span>
+        </div>
       </Floating>
 
+      {/* Nodes */}
 
-      {/* Circular Nodes */}
       {nodes.map((node) => {
         const Icon = node.icon;
 
@@ -182,7 +201,6 @@ export default function HeroIllustration() {
                 top: `${y}px`,
               }}
             >
-
               <div
                 className="
                   flex
@@ -193,12 +211,15 @@ export default function HeroIllustration() {
                   rounded-full
                   border
                   border-[#E8E2D8]
-                  bg-white
+                  bg-white/95
                   shadow-lg
+                  backdrop-blur
                   transition-all
                   duration-500
-                  hover:scale-110
-                  hover:shadow-xl
+                  hover:-translate-y-1
+                  hover:rotate-2
+                  hover:border-[#C79A3B]
+                  hover:shadow-2xl
                 "
               >
                 <Icon
@@ -206,7 +227,6 @@ export default function HeroIllustration() {
                   className="text-[#1F4D36]"
                 />
               </div>
-
 
               <p
                 className="
@@ -219,12 +239,10 @@ export default function HeroIllustration() {
               >
                 {node.label}
               </p>
-
             </div>
           </Floating>
         );
       })}
-
     </div>
   );
 }

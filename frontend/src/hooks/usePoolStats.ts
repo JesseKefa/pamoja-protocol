@@ -1,26 +1,51 @@
-import { useReadContracts } from "wagmi";
-import Pool from "@/contracts/Pool.json";
+import { useAccount, useReadContract } from "wagmi";
+import PoolABI from "@/contracts/Pool.json";
 
-export function usePoolStats(address: `0x${string}`) {
-  const { data, isLoading, error } = useReadContracts({
-    contracts: [
-      {
-        address,
-        abi: Pool.abi,
-        functionName: "memberCount",
-      },
-      {
-        address,
-        abi: Pool.abi,
-        functionName: "totalContributions",
-      },
-    ],
+export function usePoolStats(poolAddress: `0x${string}`) {
+  const { address } = useAccount();
+
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    refetch: refetchStats,
+  } = useReadContract({
+    address: poolAddress,
+    abi: PoolABI.abi,
+    functionName: "getPoolStats",
+    query: {
+      enabled: !!poolAddress,
+    },
   });
 
+  const {
+    data: member,
+    isLoading: memberLoading,
+    refetch: refetchMember,
+  } = useReadContract({
+    address: poolAddress,
+    abi: PoolABI.abi,
+    functionName: "getMemberInfo",
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address && !!poolAddress,
+    },
+  });
+
+
   return {
-    memberCount: data?.[0]?.result,
-    totalContributions: data?.[1]?.result,
-    isLoading,
-    error,
-  };
+    memberCount: stats?.memberCount ?? 0,
+    treasury: stats?.treasury ?? BigInt(0),
+    contributionAmount: stats?.contributionAmount ?? BigInt(0),
+
+    isMember: member?.[0] ?? false,
+    totalSavedByUser: member?.[1] ?? BigInt(0),
+    hasPendingRequest: member?.[2] ?? false,
+
+    isLoading: statsLoading || memberLoading,
+
+    refetch() {
+      refetchStats();
+      refetchMember();
+  },
+};
 }
