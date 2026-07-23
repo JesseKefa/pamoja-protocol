@@ -1,73 +1,197 @@
 import Container from "../ui/Container";
-import Card from "../ui/Card";
 import { ShieldCheck, Users, Landmark } from "lucide-react";
 
 export default function WhyPamoja() {
-  const features = [
+  const principles = [
     {
       icon: ShieldCheck,
-      title: "Transparent",
+      title: "Trust",
       description:
-        "Every contribution, treasury movement and governance action is recorded on-chain for every member to verify.",
+        "Community finance has always been built on trust. Pamoja strengthens that trust with transparent and verifiable records.",
     },
     {
       icon: Users,
-      title: "Community Owned",
+      title: "Ownership",
       description:
-        "Communities manage themselves. Members approve participants, contribute together and grow wealth collectively.",
+        "Communities remain in control. Members participate, contribute and make decisions together.",
     },
     {
       icon: Landmark,
-      title: "Built for Growth",
+      title: "Growth",
       description:
-        "From neighbourhood savings groups to investment clubs and cooperatives, Pamoja scales with your community.",
+        "A foundation designed to help local savings groups evolve into scalable financial networks.",
     },
   ];
 
   return (
-    <section className="bg-white py-28">
-      <Container>
-        <div className="mx-auto max-w-3xl text-center">
+    <section
+      className="
+        relative
+        bg-[#FAF8F4]
+        py-32
+      "
+    >
 
-          <p className="font-semibold uppercase tracking-[0.2em] text-[#C79A3B]">
-            WHY PAMOJA
+      <Container>
+
+
+        {/* INTRO */}
+
+        <div className="mx-auto max-w-4xl">
+
+          <p
+            className="
+              text-sm
+              font-semibold
+              uppercase
+              tracking-[0.25em]
+              text-[#C79A3B]
+            "
+          >
+            Why Pamoja
           </p>
 
-          <h2 className="mt-4 text-5xl font-black text-slate-900">
-            Modern infrastructure for trusted community finance.
+
+          <h2
+            className="
+              mt-6
+              max-w-3xl
+              text-5xl
+              font-black
+              leading-tight
+              tracking-tight
+              text-[#1F2937]
+              lg:text-6xl
+            "
+          >
+            Communities already know how to build wealth.
           </h2>
 
-          <p className="mt-8 text-lg leading-8 text-slate-600">
-            Communities have built wealth together for generations.
-            Pamoja combines that trusted model with blockchain
-            technology to create transparency, accountability
-            and long-term financial growth.
+
+          <p
+            className="
+              mt-8
+              max-w-2xl
+              text-xl
+              leading-9
+              text-slate-600
+            "
+          >
+            For generations, people have saved together,
+            supported each other and created opportunities
+            through collective finance.
+          </p>
+
+
+          <p
+            className="
+              mt-4
+              max-w-2xl
+              text-xl
+              leading-9
+              text-slate-600
+            "
+          >
+            Pamoja provides the digital infrastructure
+            that allows these communities to grow with
+            transparency and confidence.
           </p>
 
         </div>
 
-        <div className="mt-20 grid gap-8 lg:grid-cols-3">
-          {features.map((feature) => {
-            const Icon = feature.icon;
+
+
+        {/* PRINCIPLES */}
+
+        <div
+          className="
+            mt-24
+            grid
+            gap-10
+            lg:grid-cols-3
+          "
+        >
+
+          {principles.map((item) => {
+
+            const Icon = item.icon;
 
             return (
-              <Card key={feature.title}>
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1F4D36]/10">
-                  <Icon className="h-7 w-7 text-[#1F4D36]" />
+
+              <div
+                key={item.title}
+                className="
+                  group
+                  rounded-3xl
+                  border
+                  border-[#E8E2D8]
+                  bg-white
+                  p-10
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  hover:shadow-xl
+                "
+              >
+
+                <div
+                  className="
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#1F4D36]/10
+                  "
+                >
+
+                  <Icon
+                    className="
+                      h-7
+                      w-7
+                      text-[#1F4D36]
+                    "
+                  />
+
                 </div>
 
-                <h3 className="mt-8 text-2xl font-bold text-slate-900">
-                  {feature.title}
+
+                <h3
+                  className="
+                    mt-8
+                    text-3xl
+                    font-black
+                    text-[#1F2937]
+                  "
+                >
+                  {item.title}
                 </h3>
 
-                <p className="mt-4 leading-8 text-slate-600">
-                  {feature.description}
+
+                <p
+                  className="
+                    mt-5
+                    text-lg
+                    leading-8
+                    text-slate-600
+                  "
+                >
+                  {item.description}
                 </p>
-              </Card>
+
+
+              </div>
+
             );
+
           })}
+
         </div>
+
+
       </Container>
+
     </section>
   );
 }

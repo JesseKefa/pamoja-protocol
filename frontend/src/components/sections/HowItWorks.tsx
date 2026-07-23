@@ -9,87 +9,211 @@ import {
 const steps = [
   {
     icon: PlusCircle,
-    title: "Create a Community",
+    title: "Create",
     description:
-      "Start a savings group, investment club or cooperative in minutes.",
+      "Start a digital community and establish your financial foundation.",
   },
   {
     icon: UserPlus,
-    title: "Invite Members",
+    title: "Connect",
     description:
-      "Members join securely and participate transparently.",
+      "Invite members and build a trusted network around shared goals.",
   },
   {
     icon: Wallet,
-    title: "Contribute Together",
+    title: "Contribute",
     description:
-      "Monthly contributions are recorded securely on-chain.",
+      "Save together with transparent records secured on-chain.",
   },
   {
     icon: TrendingUp,
-    title: "Grow Wealth",
+    title: "Grow",
     description:
-      "Track treasury growth, governance and community progress in real time.",
+      "Manage community wealth and unlock future financial opportunities.",
   },
 ];
 
+
 export default function HowItWorks() {
   return (
-    <section className="bg-white py-28">
+    <section
+      className="
+        bg-[#FFF9EE]
+        py-32
+      "
+    >
+
       <Container>
 
-        <div className="mx-auto max-w-3xl text-center">
 
-          <p className="font-semibold uppercase tracking-[0.2em] text-[#C79A3B]">
-            HOW IT WORKS
+        {/* HEADER */}
+
+        <div className="max-w-4xl">
+
+          <p
+            className="
+              text-sm
+              font-semibold
+              uppercase
+              tracking-[0.25em]
+              text-[#C79A3B]
+            "
+          >
+            How it works
           </p>
 
-          <h2 className="mt-4 text-5xl font-black text-slate-900">
-            Simple enough for anyone.
+
+          <h2
+            className="
+              mt-6
+              text-5xl
+              font-black
+              leading-tight
+              tracking-tight
+              text-[#1F2937]
+              lg:text-6xl
+            "
+          >
+            From a simple idea
             <br />
-            Powerful enough for every community.
+            to a thriving community.
           </h2>
 
-          <p className="mt-8 text-lg leading-8 text-slate-600">
-            Whether you're managing a neighbourhood savings group,
-            an investment club or a cooperative,
-            Pamoja provides the infrastructure to do it securely.
+
+          <p
+            className="
+              mt-8
+              max-w-2xl
+              text-xl
+              leading-9
+              text-slate-600
+            "
+          >
+            Pamoja transforms traditional community
+            savings into a transparent digital experience
+            built around trust and collective growth.
           </p>
 
         </div>
 
-        <div className="mt-20 grid gap-10 md:grid-cols-2 xl:grid-cols-4">
+
+
+        {/* TIMELINE */}
+
+        <div
+          className="
+            relative
+            mt-24
+            grid
+            gap-12
+            md:grid-cols-2
+            xl:grid-cols-4
+          "
+        >
+
+          {/* LINE */}
+
+          <div
+            className="
+              absolute
+              left-0
+              right-0
+              top-10
+              hidden
+              h-px
+              bg-[#DCCFB7]
+              xl:block
+            "
+          />
+
 
           {steps.map((step, index) => {
+
             const Icon = step.icon;
 
             return (
+
               <div
                 key={step.title}
-                className="relative rounded-3xl border border-slate-200 bg-[#F8F6F2] p-8 transition hover:-translate-y-2 hover:shadow-xl"
+                className="
+                  relative
+                "
               >
-                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1F4D36] text-white">
-                  <Icon size={30} />
+
+                {/* NUMBER */}
+
+                <div
+                  className="
+                    relative
+                    z-10
+                    flex
+                    h-20
+                    w-20
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#1F4D36]
+                    text-white
+                    shadow-lg
+                  "
+                >
+                  <Icon size={32}/>
                 </div>
 
-                <span className="text-sm font-semibold uppercase tracking-widest text-[#C79A3B]">
-                  Step {index + 1}
-                </span>
 
-                <h3 className="mt-3 text-2xl font-bold text-slate-900">
+
+                <p
+                  className="
+                    mt-8
+                    text-sm
+                    font-semibold
+                    uppercase
+                    tracking-[0.2em]
+                    text-[#C79A3B]
+                  "
+                >
+                  Step {index + 1}
+                </p>
+
+
+
+                <h3
+                  className="
+                    mt-3
+                    text-3xl
+                    font-black
+                    text-[#1F2937]
+                  "
+                >
                   {step.title}
                 </h3>
 
-                <p className="mt-4 leading-8 text-slate-600">
+
+
+                <p
+                  className="
+                    mt-4
+                    text-lg
+                    leading-8
+                    text-slate-600
+                  "
+                >
                   {step.description}
                 </p>
+
+
               </div>
+
             );
+
           })}
+
 
         </div>
 
+
       </Container>
+
     </section>
   );
 }

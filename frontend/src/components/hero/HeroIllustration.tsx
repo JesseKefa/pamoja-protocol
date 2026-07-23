@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import Floating from "@/components/animations/Floating";
 import BasketRing from "./BasketRing";
 
@@ -11,6 +13,7 @@ import {
   Wallet,
   PiggyBank,
 } from "lucide-react";
+
 
 const nodes = [
   {
@@ -51,74 +54,234 @@ const nodes = [
   },
 ];
 
+
 export default function HeroIllustration() {
+
   const radius = 210;
 
+
   return (
-    <div className="relative mx-auto h-[560px] w-[560px]">
 
-      {/* Woven Rings */}
+    <div
+      className="
+        relative
+        mx-auto
+        h-[560px]
+        w-[560px]
+      "
+    >
 
-      <BasketRing
-        size={480}
-        opacity={0.30}
-      />
 
-      <BasketRing
-        size={340}
-        opacity={0.22}
-      />
+
+      {/* ROTATING COMMUNITY RINGS */}
+
+
+      <motion.div
+
+        animate={{
+          rotate:360,
+        }}
+
+        transition={{
+          duration:80,
+          repeat:Infinity,
+          ease:"linear",
+        }}
+
+        className="
+          absolute
+          inset-0
+        "
+
+      >
+
+        <BasketRing
+          size={480}
+          opacity={0.30}
+        />
+
+
+      </motion.div>
+
+
+
+      <motion.div
+
+        animate={{
+          rotate:-360,
+        }}
+
+        transition={{
+          duration:120,
+          repeat:Infinity,
+          ease:"linear",
+        }}
+
+        className="
+          absolute
+          inset-0
+        "
+
+      >
+
+        <BasketRing
+          size={340}
+          opacity={0.22}
+        />
+
+
+      </motion.div>
+
+
 
       <BasketRing
         size={220}
         opacity={0.16}
       />
 
-      {/* Connection Lines */}
+
+
+
+
+      {/* NETWORK CONNECTIONS */}
+
 
       <svg
-        className="absolute inset-0 h-full w-full"
+        className="
+          absolute
+          inset-0
+          h-full
+          w-full
+        "
         viewBox="0 0 560 560"
       >
-        {nodes.map((node) => {
+
+
+        {nodes.map((node)=>{
+
+
           const x =
             280 +
             radius *
-              Math.cos((node.angle * Math.PI) / 180);
+            Math.cos(
+              (node.angle*Math.PI)/180
+            );
+
 
           const y =
             280 +
             radius *
-              Math.sin((node.angle * Math.PI) / 180);
+            Math.sin(
+              (node.angle*Math.PI)/180
+            );
+
+
 
           return (
-            <line
-              key={node.label}
-              x1="280"
-              y1="280"
-              x2={x}
-              y2={y}
-              stroke="#C79A3B"
-              strokeOpacity="0.08"
-              strokeWidth="1.2"
-              strokeDasharray="5 6"
-            />
-          );
+
+            <g key={node.label}>
+
+
+              {/* MAIN LINE */}
+
+              <motion.line
+
+                x1="280"
+                y1="280"
+                x2={x}
+                y2={y}
+
+                stroke="#C79A3B"
+
+                strokeWidth="1"
+
+                initial={{
+                  opacity:0.05
+                }}
+
+                animate={{
+                  opacity:[
+                    0.05,
+                    0.25,
+                    0.05
+                  ],
+                }}
+
+                transition={{
+                  duration:4,
+                  repeat:Infinity,
+                }}
+
+              />
+
+
+
+              {/* MOVING DATA */}
+
+              <motion.circle
+
+                r="3"
+
+                fill="#C79A3B"
+
+                animate={{
+                  cx:[
+                    280,
+                    x
+                  ],
+
+                  cy:[
+                    280,
+                    y
+                  ],
+
+                  opacity:[
+                    0,
+                    1,
+                    0
+                  ]
+                }}
+
+                transition={{
+                  duration:4,
+                  repeat:Infinity,
+                  delay:
+                    Math.random()*3,
+                  ease:"linear"
+                }}
+
+              />
+
+
+            </g>
+
+          )
+
+
         })}
+
+
       </svg>
 
-      {/* Center */}
+
+
+
+
+
+      {/* CENTER PROTOCOL */}
+
 
       <Floating
         duration={10}
         distance={5}
       >
+
         <div
           className="
             absolute
             left-[280px]
             top-[280px]
-            z-50
+            z-30
             flex
             h-36
             w-36
@@ -128,10 +291,47 @@ export default function HeroIllustration() {
             justify-center
             rounded-full
             bg-[#1F4D36]
-            shadow-[0_20px_60px_rgba(31,77,54,0.35)]
+            shadow-[0_20px_80px_rgba(31,77,54,0.45)]
           "
         >
-          {/* Inner Ring */}
+
+
+          {/* BREATHING GLOW */}
+
+          <motion.div
+
+            animate={{
+              scale:[
+                1,
+                1.25,
+                1
+              ],
+
+              opacity:[
+                0.2,
+                0.4,
+                0.2
+              ]
+
+            }}
+
+            transition={{
+              duration:5,
+              repeat:Infinity
+            }}
+
+            className="
+              absolute
+              h-44
+              w-44
+              rounded-full
+              bg-[#C79A3B]
+              blur-3xl
+            "
+
+          />
+
+
 
           <div
             className="
@@ -143,18 +343,6 @@ export default function HeroIllustration() {
             "
           />
 
-          {/* Gold Glow */}
-
-          <div
-            className="
-              absolute
-              h-44
-              w-44
-              rounded-full
-              bg-[#C79A3B]/10
-              blur-2xl
-            "
-          />
 
           <span
             className="
@@ -166,41 +354,83 @@ export default function HeroIllustration() {
           >
             P
           </span>
+
+
         </div>
+
+
       </Floating>
 
-      {/* Nodes */}
 
-      {nodes.map((node) => {
-        const Icon = node.icon;
+
+
+
+
+
+      {/* COMMUNITY NODES */}
+
+
+      {nodes.map((node)=>{
+
+
+        const Icon=node.icon;
+
 
         const x =
           280 +
           radius *
-            Math.cos((node.angle * Math.PI) / 180);
+          Math.cos(
+            (node.angle*Math.PI)/180
+          );
+
 
         const y =
           280 +
           radius *
-            Math.sin((node.angle * Math.PI) / 180);
+          Math.sin(
+            (node.angle*Math.PI)/180
+          );
+
+
 
         return (
+
           <Floating
             key={node.label}
             duration={node.duration}
-            distance={5}
+            distance={6}
           >
-            <div
+
+
+            <motion.div
+
+              animate={{
+                scale:[
+                  1,
+                  1.05,
+                  1
+                ]
+              }}
+
+              transition={{
+                duration:5,
+                repeat:Infinity
+              }}
+
               className="
                 absolute
                 -translate-x-1/2
                 -translate-y-1/2
               "
+
               style={{
-                left: `${x}px`,
-                top: `${y}px`,
+                left:x,
+                top:y
               }}
+
             >
+
+
               <div
                 className="
                   flex
@@ -212,21 +442,20 @@ export default function HeroIllustration() {
                   border
                   border-[#E8E2D8]
                   bg-white/95
-                  shadow-lg
+                  shadow-xl
                   backdrop-blur
-                  transition-all
-                  duration-500
-                  hover:-translate-y-1
-                  hover:rotate-2
+                  transition
                   hover:border-[#C79A3B]
-                  hover:shadow-2xl
                 "
               >
+
                 <Icon
                   size={22}
                   className="text-[#1F4D36]"
                 />
+
               </div>
+
 
               <p
                 className="
@@ -239,10 +468,21 @@ export default function HeroIllustration() {
               >
                 {node.label}
               </p>
-            </div>
+
+
+            </motion.div>
+
+
           </Floating>
-        );
+
+        )
+
+
       })}
+
+
+
     </div>
+
   );
 }

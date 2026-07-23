@@ -7,7 +7,7 @@ import Button from "../ui/Button";
 
 import HeroBackground from "./HeroBackground";
 import HeroIllustration from "./HeroIllustration";
-import HeroStats from "./HeroStats";
+
 
 export default function Hero() {
   return (
@@ -15,91 +15,137 @@ export default function Hero() {
       className="
         relative
         flex
-        h-screen
-        min-h-[700px]
+        min-h-screen
         items-center
-        overflow-hidden
+        overflow-visible
       "
     >
+
       <HeroBackground />
 
+
       <Container>
+
         <div
           className="
             relative
             z-10
             grid
-            w-full
             items-center
-            gap-12
+            gap-16
+            py-24
             lg:grid-cols-2
-            lg:gap-24
+            lg:gap-10
           "
         >
+
+
           {/* LEFT */}
 
-          <FadeIn>
-            <div className="max-w-2xl">
+          <FadeIn delay={0.1}>
+
+            <div
+              className="
+                max-w-xl
+              "
+            >
+
+
+              {/* EYEBROW */}
+
               <div
                 className="
                   inline-flex
+                  items-center
                   rounded-full
                   border
                   border-[#DCCFB7]
-                  bg-[#FFF9EE]
+                  bg-white/60
                   px-5
                   py-2
                   text-sm
                   font-semibold
                   tracking-wide
                   text-[#B8860B]
+                  backdrop-blur
                 "
               >
-                Built for African Communities
+                Community Finance for Africa
               </div>
+
+
+
 
               <h1
                 className="
                   mt-8
                   text-5xl
                   font-black
-                  leading-[0.9]
-                  tracking-tight
+                  leading-[0.92]
+                  tracking-[-0.04em]
                   text-[#1F2937]
-                  lg:text-7xl
+                  sm:text-6xl
+                  lg:text-[76px]
                 "
               >
+
                 Save Together.
+
                 <br />
+
                 Grow Together.
+
                 <br />
-                <span className="text-[#1F4D36]">
+
+
+                <span
+                  className="
+                    text-[#1F4D36]
+                  "
+                >
                   Rise Together.
                 </span>
+
+
               </h1>
+
+
+
+
 
               <p
                 className="
                   mt-8
-                  max-w-xl
+                  max-w-lg
                   text-lg
                   leading-8
                   text-slate-600
-                  lg:text-xl
                 "
               >
-                From neighborhood chamas to investment clubs and
-                cooperatives, Pamoja helps communities save,
-                govern and grow together through transparent
-                on-chain finance.
+
+                A decentralized protocol helping
+                communities save, govern and build
+                wealth together.
+
               </p>
 
-              <HeroStats />
 
-              <div className="mt-10 flex flex-wrap gap-4">
+
+
+
+              <div
+                className="
+                  mt-10
+                  flex
+                  flex-wrap
+                  gap-4
+                "
+              >
+
                 <Button href="/create">
-                  Create Your Chama
+                  Create Community
                 </Button>
+
 
                 <Button
                   href="/communities"
@@ -107,23 +153,70 @@ export default function Hero() {
                 >
                   Explore Communities
                 </Button>
+
+
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-6 text-sm font-medium text-slate-500">
-                <div>✓ Self Custodied</div>
-                <div>✓ Transparent</div>
-                <div>✓ Community Governed</div>
-              </div>
+
+
+              
+
+
+
             </div>
+
+
           </FadeIn>
+
+
+
+
 
           {/* RIGHT */}
 
-          <FadeIn>
-            <HeroIllustration />
+          <FadeIn delay={0.25}>
+
+            <div
+              className="
+                relative
+                scale-90
+                lg:scale-100
+              "
+            >
+
+              <HeroIllustration />
+
+            </div>
+
+
           </FadeIn>
+
+
+
         </div>
+
+
       </Container>
+
+
+
+      {/* SECTION TRANSITION */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          bottom-0
+          left-0
+          h-40
+          w-full
+          bg-gradient-to-b
+          from-transparent
+          to-white
+        "
+      />
+
+
     </section>
   );
 }
