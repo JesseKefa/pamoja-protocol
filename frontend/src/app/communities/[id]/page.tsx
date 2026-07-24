@@ -11,6 +11,7 @@ import { usePoolStats } from "@/hooks/usePoolStats";
 import { usePendingApplicants } from "@/hooks/usePendingApplicants";
 import { useMembers } from "@/hooks/useMembers";
 import { usePoolEvents } from "@/hooks/usePoolEvents";
+import { useProposals } from "@/hooks/useProposals";
 
 import Pool from "@/contracts/Pool.json";
 
@@ -20,6 +21,8 @@ import CommunityActions from "@/components/community/CommunityActions";
 import PendingRequests from "@/components/community/PendingRequests";
 import MemberList from "@/components/community/MemberList";
 import ActivityFeed from "@/components/community/ActivityFeed";
+import ProposalList from "@/components/community/ProposalList";
+
 
 export default function CommunityDetailPage() {
   const params = useParams();
@@ -58,6 +61,12 @@ export default function CommunityDetailPage() {
   );
 
   const { activities } = events;
+
+  const proposalsHook = useProposals(
+    pool?.poolAddress as `0x${string}`
+  );
+
+  const { proposals } = proposalsHook;
 
   const { writeContract } = useWriteContract({
     mutation: {
@@ -184,6 +193,10 @@ export default function CommunityDetailPage() {
           onApprove={handleApprove}
         />
 
+        <ProposalList
+          proposals={proposals}
+        />
+
         <MemberList
           members={members}
           admin={pool.creator}
@@ -193,6 +206,7 @@ export default function CommunityDetailPage() {
           activities={activities}
         />
 
+        
       </main>
     </>
   );

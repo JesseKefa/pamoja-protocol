@@ -14,6 +14,12 @@ contract Pool {
     event JoinRequested(address indexed applicant);
     event MemberApproved(address indexed applicant);
     event ContributionMade(address indexed member, uint256 amount);
+    event ProposalCreated(
+        uint256 indexed proposalId,
+        address indexed proposer,
+        ProposalType proposalType,
+        string title
+    );
 
     struct Member {
         address wallet;
@@ -40,18 +46,56 @@ contract Pool {
         uint256 timestamp;
     }
 
+    struct Proposal {
+        uint256 id;
+        ProposalType proposalType;
+
+        string title;
+        string description;
+
+        address proposer;
+
+        address recipient;
+        uint256 amount;
+
+        uint256 newContributionAmount;
+        address newAdmin;
+
+        uint256 yesVotes;
+        uint256 noVotes;
+
+        uint256 endTime;
+
+        bool executed;
+    }
+
     mapping(address => Member) public members;
     mapping(address => JoinRequest) public joinRequests;
     mapping(address => uint256) public contributions;
+    mapping(uint256 => mapping(address => bool)) public hasVoted;
 
     address[] public memberAddresses;
     address[] public pendingApplicants;
 
     Activity[] public activities;
 
+    enum ProposalType {
+        WithdrawTreasury,
+        ChangeContribution,
+        TransferAdmin
+    }
+
+    Proposal[] public proposals;
+    uint256 private nextProposalId = 1;
+
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin");
         _;
+    }
+
+    modifier onlyMember() {
+    require(members[msg.sender].isActive, "Only members");
+    _;
     }
 
     constructor(
@@ -79,9 +123,6 @@ contract Pool {
         memberCount = 1;
     }
 
-    // ============================================================
-    // WRITE FUNCTIONS
-    // ============================================================
 
     function applyToJoin() public {
         require(!members[msg.sender].isActive, "Already a member");
@@ -166,9 +207,55 @@ contract Pool {
         emit ContributionMade(msg.sender, msg.value);
     }
 
-    // ============================================================
-    // VIEW FUNCTIONS
-    // ============================================================
+    function createWithdrawalProposal(
+        string memory title,
+        string memory proposalDescription,
+        address recipient,
+        uint256 amount
+    )
+        public
+        onlyMember
+    {
+        require(recipient != address(0), "Invalid recipient");
+        require(amount > 0, "Invalid amount");
+        require(
+            amount <= address(this).balance,
+            "Insufficient treasury"
+        );
+
+        Proposal storage proposal = proposals.push();
+
+        proposal.id = nextProposalId;
+        proposal.proposalType = ProposalType.WithdrawTreasury;
+
+        proposal.title = title;
+        proposal.description = proposalDescription;
+
+        proposal.proposer = msg.sender;
+
+        proposal.recipient = recipient;
+        proposal.amount = amount;
+
+        proposal.newContributionAmount = 0;
+        proposal.newAdmin = address(0);
+
+        proposal.yesVotes = 0;
+        proposal.noVotes = 0;
+
+        proposal.endTime = block.timestamp + 3 days;
+
+        proposal.executed = false;
+
+        emit ProposalCreated(
+            nextProposalId,
+            msg.sender,
+            ProposalType.WithdrawTreasury,
+            title
+        );
+
+        nextProposalId++;
+    }
+
 
     function isMember(address user)
         public
@@ -208,6 +295,14 @@ contract Pool {
         returns (Activity[] memory)
     {
         return activities;
+    }
+
+    function getProposals()
+        public
+        view
+        returns (Proposal[] memory)
+    {
+        return proposals;
     }
 
     function getContribution(address user)

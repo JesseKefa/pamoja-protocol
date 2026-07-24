@@ -52,3 +52,12 @@ h6 {
   background: #1f4d36;
   color: white;
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
