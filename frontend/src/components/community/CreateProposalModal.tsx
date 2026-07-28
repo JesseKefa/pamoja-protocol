@@ -1,7 +1,12 @@
 "use client";
 
+import { usePoolStats } from "@/hooks/usePoolStats";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
+import { parseEther } from "viem";
+import { toast } from "sonner";
+
+import Pool from "@/contracts/Pool.json";
 import {
   Landmark,
   Coins,
@@ -10,22 +15,45 @@ import {
 } from "lucide-react";
 
 type Props = {
+  poolAddress: `0x${string}`;
   open: boolean;
   onClose: () => void;
+  onProposalCreated: () => void;
 };
 
 export default function CreateProposalModal({
+  poolAddress,
   open,
   onClose,
+  onProposalCreated,
 }: Props) {
   const { address } = useAccount();
 
-  const [proposalType, setProposalType] =
-    useState("withdraw");
+  const {
+    treasury,
+  } = usePoolStats(poolAddress);
+
+  const [proposalType, setProposalType] = useState("withdraw");
+
+  const [supportingDocumentURI, setSupportingDocumentURI] =
+    useState("");
 
   const [recipientType, setRecipientType] = useState<
     "self" | "other"
   >("self");
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [recipient, setRecipient] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const requestedAmount =
+    amount === ""
+      ? 0n
+      : BigInt(Math.floor(Number(amount) * 1e18));
+
+  const insufficientTreasury =
+    requestedAmount > treasury;
 
   useEffect(() => {
   function handleEscape(e: KeyboardEvent) {
@@ -54,6 +82,57 @@ useEffect(() => {
     document.body.style.overflow = "";
   };
 }, [open]);
+
+
+  const { writeContract } = useWriteContract({
+    mutation: {
+      onSuccess() {
+        toast.success("Proposal submitted.");
+
+        onProposalCreated();
+
+        setTitle("");
+        setDescription("");
+        setSupportingDocumentURI("");
+        setRecipient("");
+        setAmount("");
+        setRecipientType("self");
+
+        onClose();
+      },
+
+      onError(error) {
+        console.error(error);
+
+        toast.error("Failed to create proposal.");
+      },
+    },
+  });
+
+  function handleSubmit() {
+  const recipientAddress =
+    recipientType === "self"
+      ? address
+      : recipient;
+
+  if (!recipientAddress) {
+    toast.error("Recipient required.");
+    return;
+  }
+
+  writeContract({
+      address: poolAddress,
+      abi: Pool.abi,
+      functionName: "createWithdrawalProposal",
+      args: [
+        title,
+        description,
+        supportingDocumentURI,
+        recipientAddress,
+        parseEther(amount),
+      ],
+    });
+  }
 
   if (!open) return null;
 
@@ -241,6 +320,8 @@ useEffect(() => {
         <div className="space-y-5">
 
           <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Proposal Title"
             className="
               w-full
@@ -256,7 +337,29 @@ useEffect(() => {
 
           <textarea
             rows={4}
+            value={description}
+            onChange={(e) =>
+              setDescription(e.target.value)
+            }
             placeholder="Describe your proposal..."
+            className="
+              w-full
+              rounded-2xl
+              border
+              border-slate-200
+              p-4
+              outline-none
+              transition
+              focus:border-[#1F4D36]
+            "
+          />
+
+          <input
+            value={supportingDocumentURI}
+            onChange={(e) =>
+              setSupportingDocumentURI(e.target.value)
+            }
+            placeholder="Supporting document URL (optional)"
             className="
               w-full
               rounded-2xl
@@ -358,6 +461,10 @@ useEffect(() => {
               <div className="space-y-3">
 
                 <input
+                  value={recipient}
+                  onChange={(e) =>
+                    setRecipient(e.target.value)
+                  }
                   placeholder="0x..."
                   className="
                     w-full
@@ -383,6 +490,8 @@ useEffect(() => {
           </div>
 
           <input
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder="Amount (ETH)"
             className="
               w-full
@@ -395,6 +504,17 @@ useEffect(() => {
               focus:border-[#1F4D36]
             "
           />
+
+          {insufficientTreasury && (
+
+            <p className="text-sm text-red-600">
+
+              Requested amount exceeds the
+              available treasury.
+
+            </p>
+
+          )}
 
         </div>
 
@@ -419,18 +539,24 @@ useEffect(() => {
           </button>
 
           <button
-            className="
-              rounded-full
-              bg-[#1F4D36]
-              px-6
-              py-3
-              font-semibold
-              text-white
-              transition
-              hover:bg-[#173C2B]
-            "
+              onClick={handleSubmit}
+              disabled={insufficientTreasury}
+              className={`
+                rounded-full
+                px-6
+                py-3
+                font-semibold
+                text-white
+                transition
+
+                ${
+                  insufficientTreasury
+                    ? "cursor-not-allowed bg-slate-300"
+                    : "bg-[#1F4D36] hover:bg-[#173C2B]"
+                }
+              `}
           >
-            Submit Proposal
+              Submit Proposal
           </button>
 
         </div>

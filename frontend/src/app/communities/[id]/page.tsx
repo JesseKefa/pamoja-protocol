@@ -195,6 +195,8 @@ export default function CommunityDetailPage() {
 
         <ProposalList
           proposals={proposals}
+          poolAddress={pool.poolAddress}
+          onProposalCreated={proposalsHook.refetch}
         />
 
         <MemberList

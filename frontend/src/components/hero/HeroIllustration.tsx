@@ -14,7 +14,6 @@ import {
   PiggyBank,
 } from "lucide-react";
 
-
 const nodes = [
   {
     icon: PiggyBank,
@@ -54,97 +53,61 @@ const nodes = [
   },
 ];
 
+const nodeDelays = [0.4, 1.2, 2.1, 0.8, 1.7, 2.4];
 
 export default function HeroIllustration() {
-
   const radius = 210;
 
-
   return (
-
-    <div
-      className="
-        relative
-        mx-auto
-        h-[560px]
-        w-[560px]
-      "
-    >
-
-
-
+    <div className="relative mx-auto aspect-square w-full max-w-[560px]">
       {/* ROTATING COMMUNITY RINGS */}
 
-
       <motion.div
-
         animate={{
-          rotate:360,
+          rotate: 360,
         }}
-
         transition={{
-          duration:80,
-          repeat:Infinity,
-          ease:"linear",
+          duration: 80,
+          repeat: Infinity,
+          ease: "linear",
         }}
-
         className="
           absolute
           inset-0
         "
-
       >
-
         <BasketRing
           size={480}
-          opacity={0.30}
+          opacity={0.3}
         />
-
-
       </motion.div>
 
-
-
       <motion.div
-
         animate={{
-          rotate:-360,
+          rotate: -360,
         }}
-
         transition={{
-          duration:120,
-          repeat:Infinity,
-          ease:"linear",
+          duration: 120,
+          repeat: Infinity,
+          ease: "linear",
         }}
-
         className="
           absolute
           inset-0
         "
-
       >
-
         <BasketRing
           size={340}
           opacity={0.22}
         />
-
-
       </motion.div>
-
-
 
       <BasketRing
         size={220}
         opacity={0.16}
       />
 
-
-
-
-
       {/* NETWORK CONNECTIONS */}
-
 
       <svg
         className="
@@ -155,127 +118,72 @@ export default function HeroIllustration() {
         "
         viewBox="0 0 560 560"
       >
-
-
-        {nodes.map((node)=>{
-
-
+        {nodes.map((node, index) => {
           const x =
             280 +
             radius *
-            Math.cos(
-              (node.angle*Math.PI)/180
-            );
-
+              Math.cos(
+                (node.angle * Math.PI) / 180
+              );
 
           const y =
             280 +
             radius *
-            Math.sin(
-              (node.angle*Math.PI)/180
-            );
-
-
+              Math.sin(
+                (node.angle * Math.PI) / 180
+              );
 
           return (
-
             <g key={node.label}>
-
-
               {/* MAIN LINE */}
 
               <motion.line
-
                 x1="280"
                 y1="280"
                 x2={x}
                 y2={y}
-
                 stroke="#C79A3B"
-
                 strokeWidth="1"
-
                 initial={{
-                  opacity:0.05
+                  opacity: 0.05,
                 }}
-
                 animate={{
-                  opacity:[
-                    0.05,
-                    0.25,
-                    0.05
-                  ],
+                  opacity: [0.05, 0.25, 0.05],
                 }}
-
                 transition={{
-                  duration:4,
-                  repeat:Infinity,
+                  duration: 4,
+                  repeat: Infinity,
                 }}
-
               />
-
-
 
               {/* MOVING DATA */}
 
               <motion.circle
-
                 r="3"
-
                 fill="#C79A3B"
-
                 animate={{
-                  cx:[
-                    280,
-                    x
-                  ],
-
-                  cy:[
-                    280,
-                    y
-                  ],
-
-                  opacity:[
-                    0,
-                    1,
-                    0
-                  ]
+                  cx: [280, x],
+                  cy: [280, y],
+                  opacity: [0, 1, 0],
                 }}
-
                 transition={{
-                  duration:4,
-                  repeat:Infinity,
-                  delay:
-                    Math.random()*3,
-                  ease:"linear"
+                  duration: 4,
+                  repeat: Infinity,
+                  delay: nodeDelays[index],
+                  ease: "linear",
                 }}
-
               />
-
-
             </g>
-
-          )
-
-
+          );
         })}
-
-
       </svg>
 
-
-
-
-
-
       {/* CENTER PROTOCOL */}
-
 
       <Floating
         duration={10}
         distance={5}
       >
-
         <div
           className="
             absolute
@@ -294,32 +202,17 @@ export default function HeroIllustration() {
             shadow-[0_20px_80px_rgba(31,77,54,0.45)]
           "
         >
-
-
           {/* BREATHING GLOW */}
 
           <motion.div
-
             animate={{
-              scale:[
-                1,
-                1.25,
-                1
-              ],
-
-              opacity:[
-                0.2,
-                0.4,
-                0.2
-              ]
-
+              scale: [1, 1.25, 1],
+              opacity: [0.2, 0.4, 0.2],
             }}
-
             transition={{
-              duration:5,
-              repeat:Infinity
+              duration: 5,
+              repeat: Infinity,
             }}
-
             className="
               absolute
               h-44
@@ -328,10 +221,7 @@ export default function HeroIllustration() {
               bg-[#C79A3B]
               blur-3xl
             "
-
           />
-
-
 
           <div
             className="
@@ -343,7 +233,6 @@ export default function HeroIllustration() {
             "
           />
 
-
           <span
             className="
               relative
@@ -354,83 +243,52 @@ export default function HeroIllustration() {
           >
             P
           </span>
-
-
         </div>
-
-
       </Floating>
-
-
-
-
-
-
 
       {/* COMMUNITY NODES */}
 
-
-      {nodes.map((node)=>{
-
-
-        const Icon=node.icon;
-
+      {nodes.map((node) => {
+        const Icon = node.icon;
 
         const x =
           280 +
           radius *
-          Math.cos(
-            (node.angle*Math.PI)/180
-          );
-
+            Math.cos(
+              (node.angle * Math.PI) / 180
+            );
 
         const y =
           280 +
           radius *
-          Math.sin(
-            (node.angle*Math.PI)/180
-          );
-
-
+            Math.sin(
+              (node.angle * Math.PI) / 180
+            );
 
         return (
-
           <Floating
             key={node.label}
             duration={node.duration}
             distance={6}
           >
-
-
             <motion.div
-
               animate={{
-                scale:[
-                  1,
-                  1.05,
-                  1
-                ]
+                scale: [1, 1.05, 1],
               }}
-
               transition={{
-                duration:5,
-                repeat:Infinity
+                duration: 5,
+                repeat: Infinity,
               }}
-
               className="
                 absolute
                 -translate-x-1/2
                 -translate-y-1/2
               "
-
               style={{
-                left:x,
-                top:y
+                left: x,
+                top: y,
               }}
-
             >
-
-
               <div
                 className="
                   flex
@@ -448,14 +306,11 @@ export default function HeroIllustration() {
                   hover:border-[#C79A3B]
                 "
               >
-
                 <Icon
                   size={22}
                   className="text-[#1F4D36]"
                 />
-
               </div>
-
 
               <p
                 className="
@@ -468,21 +323,10 @@ export default function HeroIllustration() {
               >
                 {node.label}
               </p>
-
-
             </motion.div>
-
-
           </Floating>
-
-        )
-
-
+        );
       })}
-
-
-
     </div>
-
   );
 }

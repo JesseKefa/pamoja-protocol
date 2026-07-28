@@ -28,32 +28,37 @@ export type Proposal = {
   executed: boolean;
 };
 
-export function useProposals(
-  poolAddress?: `0x${string}`
-) {
-  const publicClient = usePublicClient();
+  export function useProposals(
+    poolAddress?: `0x${string}`
+  ) {
+    const publicClient = usePublicClient();
 
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [loading, setLoading] = useState(true);
+    const [proposals, setProposals] = useState<Proposal[]>([]);
+    const [loading, setLoading] = useState(true);
 
-  async function load() {
-    if (!poolAddress || !publicClient) return;
+    async function load() {
+    setLoading(true);
 
-    try {
-      const data =
-        (await publicClient.readContract({
-          address: poolAddress,
-          abi: PoolABI.abi,
-          functionName: "getProposals",
-        })) as Proposal[];
-
-      setProposals(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
+    if (!poolAddress || !publicClient) {
       setLoading(false);
+      return;
     }
+
+  try {
+    const data =
+      (await publicClient.readContract({
+        address: poolAddress,
+        abi: PoolABI.abi,
+        functionName: "getProposals",
+      })) as Proposal[];
+
+    setProposals(data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     load();
@@ -61,7 +66,7 @@ export function useProposals(
 
   return {
     proposals,
-    loading,
+    isLoading: loading,
     refetch: load,
   };
 }

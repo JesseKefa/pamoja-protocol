@@ -15,9 +15,9 @@ export default function Hero() {
       className="
         relative
         flex
-        min-h-screen
+        min-h-[100svh]
         items-center
-        overflow-visible
+        overflow-hidden
       "
     >
 
@@ -179,8 +179,8 @@ export default function Hero() {
             <div
               className="
                 relative
-                scale-90
-                lg:scale-100
+                flex
+                justify-center
               "
             >
 

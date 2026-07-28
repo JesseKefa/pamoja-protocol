@@ -11,14 +11,25 @@ contract Pool {
     uint256 public totalContributions;
     uint256 public contributionAmount;
 
-    event JoinRequested(address indexed applicant);
-    event MemberApproved(address indexed applicant);
-    event ContributionMade(address indexed member, uint256 amount);
+    event JoinRequested(
+        address indexed applicant);
+    event MemberApproved(
+        address indexed applicant);
+    event ContributionMade(
+        address indexed member, uint256 amount);
     event ProposalCreated(
         uint256 indexed proposalId,
         address indexed proposer,
         ProposalType proposalType,
         string title
+    );
+    event ProposalVoted(
+        uint256 indexed proposalId,
+        address indexed voter,
+        bool support
+    );
+    event ProposalExecuted(
+        uint256 indexed proposalId
     );
 
     struct Member {
@@ -52,6 +63,7 @@ contract Pool {
 
         string title;
         string description;
+        string evidenceURI;
 
         address proposer;
 
@@ -66,8 +78,20 @@ contract Pool {
 
         uint256 endTime;
 
+        uint256 createdAt
+
         bool executed;
+
+        uint256 totalVotes;
     }
+
+    struct Vote {
+    address voter;
+    bool support;
+    string reason;
+    uint256 timestamp;
+    uint256 votingPower;
+}
 
     mapping(address => Member) public members;
     mapping(address => JoinRequest) public joinRequests;
@@ -76,6 +100,9 @@ contract Pool {
 
     address[] public memberAddresses;
     address[] public pendingApplicants;
+    Proposal[] public proposals;
+
+    mapping(uint256 => Vote[]) private proposalVotes;
 
     Activity[] public activities;
 
@@ -85,8 +112,16 @@ contract Pool {
         TransferAdmin
     }
 
-    Proposal[] public proposals;
+    enum ProposalStatus {
+        Active,
+        Passed,
+        Rejected,
+        Executed,
+        QuorumNotReached
+    }
+
     uint256 private nextProposalId = 1;
+    uint256 public constant QUORUM_PERCENT = 50;
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin");
@@ -210,6 +245,7 @@ contract Pool {
     function createWithdrawalProposal(
         string memory title,
         string memory proposalDescription,
+        string memory evidenceURI,
         address recipient,
         uint256 amount
     )
@@ -218,6 +254,30 @@ contract Pool {
     {
         require(recipient != address(0), "Invalid recipient");
         require(amount > 0, "Invalid amount");
+        require(
+            bytes(title).length > 0,
+            "Title required"
+        );
+
+        require(
+            bytes(title).length <= 100,
+            "Title too long"
+        );
+
+        require(
+            bytes(proposalDescription).length > 0,
+            "Description required"
+        );
+
+        require(
+            bytes(proposalDescription).length <= 500,
+            "Description too long"
+        );
+
+        require(
+            bytes(evidenceURI).length <= 300,
+            "Evidence URI too long"
+        );
         require(
             amount <= address(this).balance,
             "Insufficient treasury"
@@ -230,6 +290,7 @@ contract Pool {
 
         proposal.title = title;
         proposal.description = proposalDescription;
+        proposal.evidenceURI = evidenceURI;
 
         proposal.proposer = msg.sender;
 
@@ -242,9 +303,13 @@ contract Pool {
         proposal.yesVotes = 0;
         proposal.noVotes = 0;
 
+        proposal.createdAt = block.timestamp;
+
         proposal.endTime = block.timestamp + 3 days;
 
         proposal.executed = false;
+
+        proposal.totalVotes = 0;
 
         emit ProposalCreated(
             nextProposalId,
@@ -305,6 +370,16 @@ contract Pool {
         return proposals;
     }
 
+    function getProposalVotes(
+        uint256 proposalId
+    )
+        public
+        view
+        returns (Vote[] memory)
+    {
+        return proposalVotes[proposalId];
+    }
+
     function getContribution(address user)
         public
         view
@@ -355,6 +430,59 @@ contract Pool {
         });
     }
 
+    function requiredQuorumVotes()
+        public
+        view
+        returns (uint256)
+    {
+        return (memberCount * QUORUM_PERCENT + 99) / 100;
+    }
+
+    function getProposalStatus(
+        uint256 proposalId
+    )
+        public
+        view
+        returns (ProposalStatus)
+    {
+        require(
+            proposalId > 0 &&
+            proposalId <= proposals.length,
+            "Invalid proposal"
+        );
+
+        Proposal storage proposal =
+            proposals[proposalId - 1];
+
+        if (proposal.executed) {
+            return ProposalStatus.Executed;
+        }
+
+        if (block.timestamp < proposal.endTime) {
+            return ProposalStatus.Active;
+        }
+
+        uint256 totalVotes =
+            proposal.yesVotes +
+            proposal.noVotes;
+
+        if (
+            totalVotes <
+            requiredQuorumVotes()
+        ) {
+            return ProposalStatus.QuorumNotReached;
+        }
+
+        if (
+            proposal.yesVotes >
+            proposal.noVotes
+        ) {
+            return ProposalStatus.Passed;
+        }
+
+        return ProposalStatus.Rejected;
+    }
+
     function getMemberInfo(address user)
         public
         view
@@ -370,4 +498,151 @@ contract Pool {
             joinRequests[user].pending
         );
     }
+    function voteProposal(
+        uint256 proposalId,
+        bool support,
+        string memory reason
+    )
+        public
+        onlyMember
+    {
+        require(
+            proposalId > 0 &&
+            proposalId <= proposals.length,
+            "Invalid proposal"
+        );
+
+        Proposal storage proposal =
+            proposals[proposalId - 1];
+
+        require(
+            block.timestamp < proposal.endTime,
+            "Voting ended"
+        );
+
+        require(
+            !proposal.executed,
+            "Already executed"
+        );
+
+        require(
+            !hasVoted[proposalId][msg.sender],
+            "Already voted"
+        );
+
+        hasVoted[proposalId][msg.sender] = true;
+
+        if (support) {
+            proposal.yesVotes++;
+        } else {
+            proposal.noVotes++;
+        }
+
+        proposal.totalVotes++;
+
+        if (!support) {
+            require(
+                bytes(reason).length > 0,
+                "Reason required for No vote"
+            );
+
+            require(
+                bytes(reason).length <= 200,
+                "Reason too long"
+            );
+        }
+
+                proposalVotes[proposalId].push(
+                    Vote({
+                        voter: msg.sender,
+                        support: support,
+                        reason: reason,
+                        timestamp: block.timestamp
+                        votingPower: 1
+                    })
+                );
+
+        emit ProposalVoted(
+            proposalId,
+            msg.sender,
+            support
+        );
+    }
+
+    function executeProposal(
+        uint256 proposalId
+    )
+        public
+        onlyMember
+    {
+        require(
+            proposalId > 0 &&
+            proposalId <= proposals.length,
+            "Invalid proposal"
+        );
+
+        Proposal storage proposal =
+            proposals[proposalId - 1];
+
+        require(
+            block.timestamp >= proposal.endTime,
+            "Voting still active"
+        );
+
+        require(
+            !proposal.executed,
+            "Already executed"
+        );
+
+        uint256 totalVotes =
+            proposal.yesVotes +
+            proposal.noVotes;
+
+        
+        uint256 requiredVotes =
+            requiredQuorumVotes();
+
+        require(
+            totalVotes >= requiredVotes,
+            "Quorum not reached"
+        );
+
+        require(
+            proposal.yesVotes > proposal.noVotes,
+            "Proposal rejected"
+        );
+
+        require(
+            proposal.proposalType ==
+                ProposalType.WithdrawTreasury,
+            "Unsupported proposal"
+        );
+
+        require(
+            proposal.amount <= address(this).balance,
+            "Insufficient treasury"
+        );
+
+        proposal.executed = true;
+
+        activities.push(
+            Activity({
+                action: "Treasury Withdrawal",
+                user: proposal.recipient,
+                amount: proposal.amount,
+                timestamp: block.timestamp
+            })
+        );
+
+        (bool success, ) = payable(
+            proposal.recipient
+        ).call{value: proposal.amount}("");
+
+        require(success, "Transfer failed");
+
+        emit ProposalExecuted(proposalId);
+    }
+
+
+
 }
