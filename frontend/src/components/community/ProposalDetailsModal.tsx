@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useProposalVotes } from "@/hooks/useProposalVotes";
 
 type Proposal = {
   id: bigint;
@@ -21,6 +22,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   proposal: Proposal | null;
+  poolAddress: `0x${string}`;
 };
 
 function shorten(address: string) {
@@ -31,8 +33,14 @@ export default function ProposalDetailsModal({
   open,
   onClose,
   proposal,
+  poolAddress,
 }: Props) {
   if (!open || !proposal) return null;
+
+  const { votes } = useProposalVotes(
+    poolAddress,
+    proposal.id
+  );
 
   const [now, setNow] = useState(Date.now());
 
@@ -201,6 +209,79 @@ export default function ProposalDetailsModal({
 
           )}
 
+        </div>
+
+        <div className="mt-10">
+          <h4 className="text-xl font-bold">
+            Voting History
+          </h4>
+
+          <div className="mt-5 space-y-4">
+
+            {votes.length === 0 ? (
+
+              <div className="rounded-xl bg-slate-50 p-5 text-slate-500">
+                No votes yet.
+              </div>
+
+            ) : (
+
+              votes.map((vote, index) => (
+
+                <div
+                  key={index}
+                  className="rounded-2xl border p-5"
+                >
+                  <div className="flex items-center justify-between">
+
+                    <div>
+
+                      <p className="font-semibold">
+                        {vote.voter.slice(0, 6)}...
+                        {vote.voter.slice(-4)}
+                      </p>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        {new Date(
+                          Number(vote.timestamp) * 1000
+                        ).toLocaleString()}
+                      </p>
+
+                    </div>
+
+                    <span
+                      className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                        vote.support
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {vote.support ? "YES" : "NO"}
+                    </span>
+
+                  </div>
+
+                  {!vote.support && vote.reason && (
+
+                    <div className="mt-4 rounded-xl bg-slate-50 p-4">
+                      <p className="text-sm text-slate-500">
+                        Reason
+                      </p>
+
+                      <p className="mt-2 leading-relaxed">
+                        {vote.reason}
+                      </p>
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))
+
+            )}
+
+          </div>
         </div>
 
         {/* Supporting Document */}

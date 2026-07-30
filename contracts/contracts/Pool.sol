@@ -78,7 +78,7 @@ contract Pool {
 
         uint256 endTime;
 
-        uint256 createdAt
+        uint256 createdAt;
 
         bool executed;
 

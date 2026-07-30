@@ -79,10 +79,9 @@ export default function ProposalList({
       <ProposalDetailsModal
           open={selectedProposal !== null}
           proposal={selectedProposal}
-          onClose={() =>
-              setSelectedProposal(null)
-          }
-      />     
+          poolAddress={poolAddress}
+          onClose={() => setSelectedProposal(null)}
+      />   
       
     </section>
   );
