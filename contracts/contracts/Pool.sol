@@ -557,7 +557,7 @@ contract Pool {
                         voter: msg.sender,
                         support: support,
                         reason: reason,
-                        timestamp: block.timestamp
+                        timestamp: block.timestamp,
                         votingPower: 1
                     })
                 );

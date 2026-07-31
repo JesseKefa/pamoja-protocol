@@ -3,6 +3,8 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useProposalVotes } from "@/hooks/useProposalVotes";
+import { useProposalStatus } from "@/hooks/useProposalStatus";
+import ExecuteProposalButton from "./ExecuteProposalButton";
 
 type Proposal = {
   id: bigint;
@@ -11,7 +13,7 @@ type Proposal = {
   proposer: string;
   recipient: string;
   amount: bigint;
-  supportingDocumentURI: string;
+  evidenceURI: string;
   yesVotes: bigint;
   noVotes: bigint;
   endTime: bigint;
@@ -35,11 +37,16 @@ export default function ProposalDetailsModal({
   proposal,
   poolAddress,
 }: Props) {
-  if (!open || !proposal) return null;
-
+  const proposalId = proposal?.id ?? 0n;
+  
   const { votes } = useProposalVotes(
     poolAddress,
-    proposal.id
+    proposalId
+  );
+
+  const { status } = useProposalStatus(
+    poolAddress,
+    proposalId
   );
 
   const [now, setNow] = useState(Date.now());
@@ -51,6 +58,8 @@ export default function ProposalDetailsModal({
 
     return () => clearInterval(interval);
   }, []);
+
+  if (!open || !proposal) return null;
 
   const secondsLeft = Math.max(
     0,
@@ -163,21 +172,38 @@ export default function ProposalDetailsModal({
 
         <div className="mt-6">
 
-          {proposal.executed ? (
+          {status === 0 && (
+              <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-700">
+                  Active
+              </span>
+          )}
 
-            <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
-              Executed
-            </span>
+          {status === 1 && (
+              <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
+                  Passed
+              </span>
+          )}
 
-          ) : (
+          {status === 2 && (
+              <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
+                  Rejected
+              </span>
+          )}
 
-            <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-700">
-              Active
-            </span>
+          {status === 3 && (
+              <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
+                  Executed
+              </span>
+          )}
 
+          {status === 4 && (
+              <span className="rounded-full bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+                  Quorum Not Reached
+              </span>
           )}
 
         </div>
+
 
         {/* Voting Countdown */}
 
@@ -286,7 +312,7 @@ export default function ProposalDetailsModal({
 
         {/* Supporting Document */}
 
-        {proposal.supportingDocumentURI && (
+        {proposal.evidenceURI && (
 
           <div className="mt-8">
 
@@ -295,7 +321,7 @@ export default function ProposalDetailsModal({
             </p>
 
             <a
-              href={proposal.supportingDocumentURI}
+              href={proposal.evidenceURI}
               target="_blank"
               rel="noreferrer"
               className="
@@ -304,7 +330,7 @@ export default function ProposalDetailsModal({
                 underline
               "
             >
-              {proposal.supportingDocumentURI}
+              {proposal.evidenceURI}
             </a>
 
           </div>
@@ -329,9 +355,21 @@ export default function ProposalDetailsModal({
               👎 No {proposal.noVotes.toString()}
             </div>
 
+            {status === 1 && !proposal.executed && (
+              <ExecuteProposalButton
+                proposalId={proposal.id}
+                poolAddress={poolAddress}
+                onExecuted={() => {
+                  window.location.reload();
+                }}
+              />
+            )}
+
           </div>
 
         </div>
+
+        
 
       </div>
     </div>
