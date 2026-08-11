@@ -1,6 +1,17 @@
 import { useMemo } from "react";
 import { usePools } from "./usePools";
 
+type Pool = {
+  id: bigint;
+  name: string;
+  description: string;
+  creator: `0x${string}`;
+  poolAddress: `0x${string}`;
+  createdAt: bigint;
+  isActive: boolean;
+  contributionAmount: bigint;
+};
+
 export function useDashboard() {
   const {
     pools,
@@ -8,30 +19,28 @@ export function useDashboard() {
     error,
   } = usePools();
 
-    const stats = useMemo(() => {
+  const stats = useMemo(() => {
+    const totalCommunities = pools.length;
 
-        const totalCommunities = pools.length;
-
-        const totalSaved = pools.reduce(
-            (sum: number, pool: any) =>
-                sum +
-                Number(pool.totalContributions ?? 0),
-            0
-        );
-
-        return {
-            totalCommunities,
-            totalSaved,
-            pendingRequests: 0,
-            monthlyContribution: 0,
-        };
-
-    }, [pools]);
+    const totalSaved = pools.reduce(
+      (sum: bigint, pool: Pool) => {
+        return sum + pool.contributionAmount;
+      },
+      0n
+    );
 
     return {
-        pools,
-        stats,
-        isLoading,
-        error,
+      totalCommunities,
+      totalSaved,
+      pendingRequests: 0,
+      monthlyContribution: 0n,
     };
+  }, [pools]);
+
+  return {
+    pools,
+    stats,
+    isLoading,
+    error,
+  };
 }

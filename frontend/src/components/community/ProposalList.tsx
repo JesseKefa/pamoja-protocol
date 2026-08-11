@@ -11,14 +11,26 @@ import { useProposalStatus } from "@/hooks/useProposalStatus";
 
 type Proposal = {
   id: bigint;
+  proposalType: number;
+
   title: string;
   description: string;
-  proposer: string;
-  recipient: string;
+
+  proposer: `0x${string}`;
+
+  recipient: `0x${string}`;
   amount: bigint;
+
+  evidenceURI: string;
+
+  newContributionAmount: bigint;
+  newAdmin: `0x${string}`;
+
   yesVotes: bigint;
   noVotes: bigint;
+
   endTime: bigint;
+
   executed: boolean;
 };
 

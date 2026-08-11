@@ -15,8 +15,7 @@ export default function PendingApplications({
   applications,
 }: Props) {
   return (
-    <section className="mt-16">
-
+    <section>
       <div className="mb-8">
         <h2 className="text-3xl font-black">
           Pending Applications
@@ -28,15 +27,14 @@ export default function PendingApplications({
       </div>
 
       {applications.length === 0 ? (
-
         <div className="rounded-3xl border bg-white p-12 text-center shadow-sm">
-
           <h3 className="text-xl font-bold">
             No pending applications
           </h3>
 
           <p className="mt-3 text-slate-500">
-            You're already a member of every community you've applied to.
+            You&apos;re already a member of every community you&apos;ve
+            applied to.
           </p>
 
           <Link
@@ -56,15 +54,10 @@ export default function PendingApplications({
           >
             Browse Communities
           </Link>
-
         </div>
-
       ) : (
-
         <div className="grid gap-6 md:grid-cols-2">
-
           {applications.map((application) => (
-
             <div
               key={application.id}
               className="
@@ -75,13 +68,11 @@ export default function PendingApplications({
                 shadow-sm
               "
             >
-
               <h3 className="text-2xl font-bold">
                 {application.name}
               </h3>
 
               <div className="mt-8">
-
                 <p className="text-sm text-slate-500">
                   Status
                 </p>
@@ -101,21 +92,16 @@ export default function PendingApplications({
                 >
                   Pending Approval
                 </span>
-
               </div>
 
               <p className="mt-8 text-sm text-slate-500">
-                Waiting for the community administrator to review your request.
+                Waiting for the community administrator to review your
+                request.
               </p>
-
             </div>
-
           ))}
-
         </div>
-
       )}
-
     </section>
   );
 }

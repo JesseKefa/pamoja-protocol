@@ -9,17 +9,25 @@ import Card from "../ui/Card";
 
 import { usePools } from "@/hooks/usePools";
 
+type Pool = {
+  id: bigint;
+  name: string;
+  description: string;
+  creator: `0x${string}`;
+  poolAddress: `0x${string}`;
+  createdAt: bigint;
+  isActive: boolean;
+  contributionAmount: bigint;
+};
+
 export default function FeaturedCommunities() {
   const { pools, isLoading } = usePools();
 
   return (
-    <section className="bg-[#F8F6F2] py-28">
+    <section>
       <Container>
-
         <div className="flex items-end justify-between">
-
           <div>
-
             <p className="font-semibold uppercase tracking-[0.2em] text-[#C79A3B]">
               COMMUNITIES
             </p>
@@ -32,7 +40,6 @@ export default function FeaturedCommunities() {
               Explore transparent community savings groups already
               building wealth on Pamoja Protocol.
             </p>
-
           </div>
 
           <Link
@@ -41,7 +48,6 @@ export default function FeaturedCommunities() {
           >
             View all →
           </Link>
-
         </div>
 
         {isLoading && (
@@ -53,9 +59,7 @@ export default function FeaturedCommunities() {
         {!isLoading &&
           Array.isArray(pools) &&
           pools.length === 0 && (
-
             <Card className="mt-14 text-center">
-
               <h3 className="text-3xl font-bold text-slate-900">
                 No Communities Yet
               </h3>
@@ -71,31 +75,25 @@ export default function FeaturedCommunities() {
               >
                 Create Community
               </Link>
-
             </Card>
           )}
 
         <div className="mt-16 grid gap-8 lg:grid-cols-3">
-
           {Array.isArray(pools) &&
-            pools.slice(0, 6).map((pool: any) => (
-
+            pools.slice(0, 6).map((pool: Pool) => (
               <Card
                 key={pool.poolAddress}
                 className="group transition duration-300 hover:-translate-y-2 hover:shadow-xl"
               >
-
                 <div className="flex items-center justify-between">
-
                   <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
-                    Active
+                    {pool.isActive ? "Active" : "Inactive"}
                   </span>
 
                   <ArrowRight
                     className="text-slate-400 transition group-hover:translate-x-1"
                     size={18}
                   />
-
                 </div>
 
                 <h3 className="mt-8 text-3xl font-bold text-slate-900">
@@ -107,27 +105,21 @@ export default function FeaturedCommunities() {
                 </p>
 
                 <div className="mt-8 space-y-4">
-
                   <div className="flex items-center gap-3">
-
                     <Wallet size={18} />
 
                     <span className="text-slate-700">
                       {formatEther(pool.contributionAmount)} ETH / month
                     </span>
-
                   </div>
 
                   <div className="flex items-center gap-3">
-
                     <Users size={18} />
 
                     <span className="text-slate-700">
                       Community Savings Group
                     </span>
-
                   </div>
-
                 </div>
 
                 <Link
@@ -136,13 +128,9 @@ export default function FeaturedCommunities() {
                 >
                   View Community →
                 </Link>
-
               </Card>
-
             ))}
-
         </div>
-
       </Container>
     </section>
   );

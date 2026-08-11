@@ -51,7 +51,7 @@ export default function CommunitiesPage() {
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {Array.isArray(pools) &&
-            pools.map((pool: any) => (
+            pools.map((pool) => (
               <CommunityCard
                 key={pool.poolAddress}
                 pool={pool}

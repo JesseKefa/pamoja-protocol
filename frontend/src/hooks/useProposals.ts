@@ -28,45 +28,71 @@ export type Proposal = {
   executed: boolean;
 };
 
-  export function useProposals(
-    poolAddress?: `0x${string}`
-  ) {
-    const publicClient = usePublicClient();
+export function useProposals(
+  poolAddress?: `0x${string}`
+) {
+  const publicClient = usePublicClient();
 
-    const [proposals, setProposals] = useState<Proposal[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    async function load() {
-    setLoading(true);
-
+  async function refetch() {
     if (!poolAddress || !publicClient) {
+      setProposals([]);
       setLoading(false);
       return;
     }
 
-  try {
-    const data =
-      (await publicClient.readContract({
+    setLoading(true);
+
+    try {
+      const data = (await publicClient.readContract({
         address: poolAddress,
         abi: PoolABI.abi,
         functionName: "getProposals",
       })) as Proposal[];
 
-    setProposals(data);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setLoading(false);
+      setProposals(data);
+    } catch (error) {
+      console.error("Failed to load proposals:", error);
+      setProposals([]);
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   useEffect(() => {
+    if (!poolAddress || !publicClient) {
+      setProposals([]);
+      setLoading(false);
+      return;
+    }
+
+    async function load() {
+      setLoading(true);
+
+      try {
+        const data = (await publicClient.readContract({
+          address: poolAddress,
+          abi: PoolABI.abi,
+          functionName: "getProposals",
+        })) as Proposal[];
+
+        setProposals(data);
+      } catch (error) {
+        console.error("Failed to load proposals:", error);
+        setProposals([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     load();
   }, [poolAddress, publicClient]);
 
   return {
     proposals,
     isLoading: loading,
-    refetch: load,
+    refetch,
   };
 }

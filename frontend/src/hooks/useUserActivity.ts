@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
+import type { Log } from "viem";
 
 import PoolABI from "@/contracts/Pool.json";
 import { usePools } from "./usePools";
@@ -8,6 +9,25 @@ export type Activity = {
   type: string;
   community: string;
   amount?: bigint;
+};
+
+type Pool = {
+  id: bigint;
+  name: string;
+  description: string;
+  creator: `0x${string}`;
+  poolAddress: `0x${string}`;
+  createdAt: bigint;
+  isActive: boolean;
+  contributionAmount: bigint;
+};
+
+type EventLog = Log & {
+  args?: {
+    applicant?: `0x${string}`;
+    member?: `0x${string}`;
+    amount?: bigint;
+  };
 };
 
 export function useUserActivity() {
@@ -24,7 +44,7 @@ export function useUserActivity() {
     async function load() {
       const all: Activity[] = [];
 
-      for (const pool of pools) {
+      for (const pool of pools as Pool[]) {
         try {
           const [joins, approvals, contributions] =
             await Promise.all([
@@ -32,34 +52,37 @@ export function useUserActivity() {
                 address: pool.poolAddress,
                 abi: PoolABI.abi,
                 eventName: "JoinRequested",
-                fromBlock: BigInt(0),
+                fromBlock: 0n,
               }),
 
               publicClient.getLogs({
                 address: pool.poolAddress,
                 abi: PoolABI.abi,
                 eventName: "MemberApproved",
-                fromBlock: BigInt(0),
+                fromBlock: 0n,
               }),
 
               publicClient.getLogs({
                 address: pool.poolAddress,
                 abi: PoolABI.abi,
                 eventName: "ContributionMade",
-                fromBlock: BigInt(0),
+                fromBlock: 0n,
               }),
             ]);
 
-          joins.forEach((event: any) => {
+          joins.forEach((event) => {
+            const typedEvent = event as EventLog;
+
             const applicant =
-              event.args?.applicant ??
-              event.topics?.[1];
+              typedEvent.args?.applicant ??
+              typedEvent.topics?.[1];
 
             if (
-              applicant?.toLowerCase() !==
-              address.toLowerCase()
-            )
+              typeof applicant !== "string" ||
+              applicant.toLowerCase() !== address.toLowerCase()
+            ) {
               return;
+            }
 
             all.push({
               type: "Join Request",
@@ -67,16 +90,19 @@ export function useUserActivity() {
             });
           });
 
-          approvals.forEach((event: any) => {
+          approvals.forEach((event) => {
+            const typedEvent = event as EventLog;
+
             const applicant =
-              event.args?.applicant ??
-              event.topics?.[1];
+              typedEvent.args?.applicant ??
+              typedEvent.topics?.[1];
 
             if (
-              applicant?.toLowerCase() !==
-              address.toLowerCase()
-            )
+              typeof applicant !== "string" ||
+              applicant.toLowerCase() !== address.toLowerCase()
+            ) {
               return;
+            }
 
             all.push({
               type: "Approved",
@@ -84,21 +110,24 @@ export function useUserActivity() {
             });
           });
 
-          contributions.forEach((event: any) => {
+          contributions.forEach((event) => {
+            const typedEvent = event as EventLog;
+
             const member =
-              event.args?.member ??
-              event.topics?.[1];
+              typedEvent.args?.member ??
+              typedEvent.topics?.[1];
 
             if (
-              member?.toLowerCase() !==
-              address.toLowerCase()
-            )
+              typeof member !== "string" ||
+              member.toLowerCase() !== address.toLowerCase()
+            ) {
               return;
+            }
 
             all.push({
               type: "Contribution",
               community: pool.name,
-              amount: event.args?.amount,
+              amount: typedEvent.args?.amount,
             });
           });
         } catch {

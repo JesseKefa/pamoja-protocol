@@ -1,3 +1,21 @@
+type EthereumError = {
+  code?: number;
+  message?: string;
+};
+
+type EthereumProvider = {
+  request: (args: {
+    method: string;
+    params?: unknown[];
+  }) => Promise<unknown>;
+};
+
+declare global {
+  interface Window {
+    ethereum?: EthereumProvider;
+  }
+}
+
 export async function switchToHardhat() {
   if (!window.ethereum) {
     alert("MetaMask is not installed.");
@@ -9,8 +27,10 @@ export async function switchToHardhat() {
       method: "wallet_switchEthereumChain",
       params: [{ chainId: "0x7A69" }],
     });
-  } catch (error: any) {
-    if (error.code === 4902) {
+  } catch (error: unknown) {
+    const ethereumError = error as EthereumError;
+
+    if (ethereumError.code === 4902) {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [

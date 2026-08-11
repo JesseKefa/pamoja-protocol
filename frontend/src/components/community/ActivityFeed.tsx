@@ -52,11 +52,6 @@ function formatAmount(amount: bigint) {
   return `${(Number(amount) / 1e18).toFixed(4)} ETH`;
 }
 
-function formatDate(timestamp: bigint) {
-  return new Date(
-    Number(timestamp) * 1000
-  ).toLocaleString();
-}
 
 function ActivityItem({
   activity,

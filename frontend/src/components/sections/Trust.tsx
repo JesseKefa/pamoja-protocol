@@ -4,20 +4,29 @@ import { usePools } from "@/hooks/usePools";
 import Container from "../ui/Container";
 import { formatEther } from "viem";
 
+type Pool = {
+  id: bigint;
+  name: string;
+  description: string;
+  creator: `0x${string}`;
+  poolAddress: `0x${string}`;
+  createdAt: bigint;
+  isActive: boolean;
+  contributionAmount: bigint;
+};
+
 export default function Impact() {
-
   const { pools } = usePools();
-
 
   const communityCount = pools?.length ?? 0;
 
-
   const treasury =
-    pools?.reduce((total: bigint, pool: any) => {
-      return total + BigInt(pool.contributionAmount);
-    }, BigInt(0)) ?? BigInt(0);
-
-
+    pools?.reduce(
+      (total: bigint, pool: Pool) => {
+        return total + pool.contributionAmount;
+      },
+      0n
+    ) ?? 0n;
 
   const stats = [
     {
@@ -38,9 +47,7 @@ export default function Impact() {
     },
   ];
 
-
   return (
-
     <section
       className="
         relative
@@ -50,7 +57,6 @@ export default function Impact() {
         text-white
       "
     >
-
       {/* subtle glow */}
 
       <div
@@ -67,10 +73,7 @@ export default function Impact() {
         "
       />
 
-
       <Container>
-
-
         <div
           className="
             relative
@@ -79,7 +82,6 @@ export default function Impact() {
             text-center
           "
         >
-
           <p
             className="
               text-sm
@@ -91,7 +93,6 @@ export default function Impact() {
           >
             Impact
           </p>
-
 
           <h2
             className="
@@ -107,7 +108,6 @@ export default function Impact() {
             of community-owned finance.
           </h2>
 
-
           <p
             className="
               mx-auto
@@ -122,12 +122,7 @@ export default function Impact() {
             Every contribution creates transparency.
             Every member participates in shared ownership.
           </p>
-
-
         </div>
-
-
-
 
         <div
           className="
@@ -139,9 +134,7 @@ export default function Impact() {
             xl:grid-cols-4
           "
         >
-
           {stats.map((stat) => (
-
             <div
               key={stat.label}
               className="
@@ -151,7 +144,6 @@ export default function Impact() {
                 text-center
               "
             >
-
               <h3
                 className="
                   text-6xl
@@ -163,7 +155,6 @@ export default function Impact() {
                 {stat.value}
               </h3>
 
-
               <p
                 className="
                   mt-4
@@ -173,19 +164,10 @@ export default function Impact() {
               >
                 {stat.label}
               </p>
-
-
             </div>
-
           ))}
-
         </div>
-
-
       </Container>
-
-
     </section>
-
   );
 }

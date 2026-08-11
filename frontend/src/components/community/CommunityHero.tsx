@@ -1,13 +1,21 @@
-import type { ReactNode } from "react";
+type Pool = {
+  id: bigint;
+  name: string;
+  description: string;
+  creator: `0x${string}`;
+  poolAddress: `0x${string}`;
+  contributionAmount: bigint;
+  createdAt: bigint;
+  isActive: boolean;
+};
 
 type Props = {
-  pool: any;
+  pool: Pool;
 };
 
 export default function CommunityHero({ pool }: Props) {
   return (
     <section className="mb-14">
-
       <span
         className="
           rounded-full
@@ -19,7 +27,7 @@ export default function CommunityHero({ pool }: Props) {
           text-emerald-700
         "
       >
-        Active Community
+        {pool.isActive ? "Active Community" : "Inactive Community"}
       </span>
 
       <h1 className="mt-6 text-5xl font-black">
@@ -29,7 +37,6 @@ export default function CommunityHero({ pool }: Props) {
       <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">
         {pool.description}
       </p>
-
     </section>
   );
 }
