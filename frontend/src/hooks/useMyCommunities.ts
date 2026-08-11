@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
 import { usePools } from "./usePools";
-import { usePublicClient } from "wagmi";
 
 import PoolABI from "@/contracts/Pool.json";
 
@@ -11,6 +10,8 @@ type Community = {
   name: string;
   treasury: bigint;
   members: number;
+  contribution: bigint;
+  contributionAmount: bigint;
   poolAddress: `0x${string}`;
 };
 
@@ -21,10 +22,17 @@ export function useMyCommunities() {
 
   const { pools } = usePools();
 
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<
+    Community[]
+  >([]);
 
   useEffect(() => {
-    if (!address || !publicClient) return;
+    if (!address || !publicClient) {
+      setCommunities([]);
+      return;
+    }
+
+    let cancelled = false;
 
     async function load() {
       const mine: Community[] = [];
@@ -52,22 +60,42 @@ export function useMyCommunities() {
               contributionAmount: bigint;
             };
 
+          const contribution =
+            (await publicClient.readContract({
+              address: pool.poolAddress,
+              abi: PoolABI.abi,
+              functionName: "getContribution",
+              args: [address],
+            })) as bigint;
+
           mine.push({
             id: pool.id,
             name: pool.name,
             treasury: stats.treasury,
             members: Number(stats.memberCount),
+            contribution,
+            contributionAmount:
+              stats.contributionAmount,
             poolAddress: pool.poolAddress,
           });
-        } catch {
-          continue;
+        } catch (error) {
+          console.error(
+            `Failed to load community ${pool.poolAddress}`,
+            error
+          );
         }
       }
 
-      setCommunities(mine);
+      if (!cancelled) {
+        setCommunities(mine);
+      }
     }
 
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [address, pools, publicClient]);
 
   return {

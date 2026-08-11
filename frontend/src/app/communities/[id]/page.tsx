@@ -137,9 +137,11 @@ export default function CommunityDetailPage() {
     );
   }
 
+  const currentPool = pool;
+
   function handleJoin() {
     writeContract({
-      address: pool.poolAddress,
+      address: currentPool.poolAddress,
       abi: Pool.abi,
       functionName: "applyToJoin",
     });
@@ -147,10 +149,10 @@ export default function CommunityDetailPage() {
 
   function handleContribute() {
     writeContract({
-      address: pool.poolAddress,
+      address: currentPool.poolAddress,
       abi: Pool.abi,
       functionName: "contribute",
-      value: pool.contributionAmount,
+      value: currentPool.contributionAmount,
     });
   }
 
@@ -158,7 +160,7 @@ export default function CommunityDetailPage() {
     applicant: `0x${string}`
   ) {
     writeContract({
-      address: pool.poolAddress,
+      address: currentPool.poolAddress,
       abi: Pool.abi,
       functionName: "approveMember",
       args: [applicant],
@@ -180,7 +182,7 @@ export default function CommunityDetailPage() {
         />
 
         <CommunityActions
-          isAdmin={address === pool.creator}
+          isAdmin={address === currentPool.creator}
           isMember={isMember}
           hasPendingRequest={hasPendingRequest}
           onJoin={handleJoin}
@@ -188,20 +190,20 @@ export default function CommunityDetailPage() {
         />
 
         <PendingRequests
-          isAdmin={address === pool.creator}
+          isAdmin={address === currentPool.creator}
           applicants={applicants}
           onApprove={handleApprove}
         />
 
         <ProposalList
           proposals={proposals}
-          poolAddress={pool.poolAddress}
+          poolAddress={currentPool.poolAddress}
           onProposalCreated={proposalsHook.refetch}
         />
 
         <MemberList
           members={members}
-          admin={pool.creator}
+          admin={currentPool.creator}
         />
 
         <ActivityFeed

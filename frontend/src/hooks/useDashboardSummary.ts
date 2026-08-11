@@ -11,10 +11,10 @@ type Summary = {
   communities: number;
   pendingApplications: number;
   totalSaved: string;
-  monthlyCommitment: string;
+  contributionCommitment: string;
 };
 
-export function useDashboardSummary() {
+export function useDashboardSummary(): Summary {
   const { address } = useAccount();
 
   const publicClient = usePublicClient();
@@ -26,15 +26,26 @@ export function useDashboardSummary() {
     communities: 0,
     pendingApplications: 0,
     totalSaved: "0",
-    monthlyCommitment: "0",
+    contributionCommitment: "0",
   });
 
   useEffect(() => {
-    if (!address || !publicClient) return;
+    if (!address || !publicClient) {
+      setSummary({
+        communities: 0,
+        pendingApplications: applications.length,
+        totalSaved: "0",
+        contributionCommitment: "0",
+      });
+
+      return;
+    }
+
+    let cancelled = false;
 
     async function load() {
-      let totalSaved = BigInt(0);
-      let monthlyCommitment = BigInt(0);
+      let totalSaved = 0n;
+      let contributionCommitment = 0n;
 
       for (const community of communities) {
         try {
@@ -58,23 +69,35 @@ export function useDashboardSummary() {
             };
 
           totalSaved += contribution;
-          monthlyCommitment += stats.contributionAmount;
-        } catch {
-          continue;
+          contributionCommitment +=
+            stats.contributionAmount;
+        } catch (error) {
+          console.error(
+            `Failed to load community ${community.poolAddress}`,
+            error
+          );
         }
       }
+
+      if (cancelled) return;
 
       setSummary({
         communities: communities.length,
         pendingApplications: applications.length,
-        totalSaved: Number(formatEther(totalSaved)).toFixed(3),
-        monthlyCommitment: Number(
-          formatEther(monthlyCommitment)
+        totalSaved: Number(
+          formatEther(totalSaved)
+        ).toFixed(3),
+        contributionCommitment: Number(
+          formatEther(contributionCommitment)
         ).toFixed(3),
       });
     }
 
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     address,
     publicClient,
