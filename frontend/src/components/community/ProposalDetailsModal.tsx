@@ -38,7 +38,7 @@ export default function ProposalDetailsModal({
   poolAddress,
 }: Props) {
   const proposalId = proposal?.id ?? 0n;
-  
+
   const { votes } = useProposalVotes(
     poolAddress,
     proposalId
@@ -59,16 +59,26 @@ export default function ProposalDetailsModal({
     return () => clearInterval(interval);
   }, []);
 
-  if (!open || !proposal) return null;
+  if (!open || !proposal) {
+    return null;
+  }
 
   const secondsLeft = Math.max(
     0,
-    Number(proposal.endTime) - Math.floor(now / 1000)
+    Number(proposal.endTime) -
+      Math.floor(now / 1000)
   );
 
   const days = Math.floor(secondsLeft / 86400);
-  const hours = Math.floor((secondsLeft % 86400) / 3600);
-  const minutes = Math.floor((secondsLeft % 3600) / 60);
+
+  const hours = Math.floor(
+    (secondsLeft % 86400) / 3600
+  );
+
+  const minutes = Math.floor(
+    (secondsLeft % 3600) / 60
+  );
+
   const seconds = secondsLeft % 60;
 
   const votingEnded = secondsLeft === 0;
@@ -87,7 +97,9 @@ export default function ProposalDetailsModal({
       "
     >
       <div
-        onClick={(e) => e.stopPropagation()}
+        onClick={(event) =>
+          event.stopPropagation()
+        }
         className="
           h-full
           w-full
@@ -98,6 +110,7 @@ export default function ProposalDetailsModal({
           shadow-2xl
         "
       >
+
         {/* Header */}
 
         <div className="mb-8 flex items-center justify-between">
@@ -118,7 +131,8 @@ export default function ProposalDetailsModal({
           </button>
         </div>
 
-        {/* Title */}
+
+        {/* Proposal */}
 
         <h3 className="text-2xl font-bold">
           {proposal.title}
@@ -128,16 +142,17 @@ export default function ProposalDetailsModal({
           {proposal.description}
         </p>
 
+
         {/* Proposal Info */}
 
-        <div className="mt-8 space-y-5">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2">
 
           <div>
             <p className="text-sm text-slate-500">
               Proposed By
             </p>
 
-            <p className="mt-1 font-medium text-[#1F4D36]">
+            <p className="mt-1 font-semibold text-[#1F4D36]">
               {shorten(proposal.proposer)}
             </p>
           </div>
@@ -147,12 +162,13 @@ export default function ProposalDetailsModal({
               Recipient
             </p>
 
-            <p className="mt-1 font-medium">
+            <p className="mt-1 font-semibold">
               {shorten(proposal.recipient)}
             </p>
           </div>
 
         </div>
+
 
         {/* Amount */}
 
@@ -163,43 +179,92 @@ export default function ProposalDetailsModal({
           </p>
 
           <p className="mt-2 text-3xl font-black">
-            {(Number(proposal.amount) / 1e18).toFixed(4)} ETH
+            {(
+              Number(proposal.amount) / 1e18
+            ).toFixed(4)}{" "}
+            ETH
           </p>
 
         </div>
+
 
         {/* Status */}
 
         <div className="mt-6">
 
           {status === 0 && (
-              <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-700">
-                  Active
-              </span>
+            <span className="
+              inline-flex
+              rounded-full
+              bg-yellow-100
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-yellow-700
+            ">
+              Active
+            </span>
           )}
 
           {status === 1 && (
-              <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-                  Passed
-              </span>
+            <span className="
+              inline-flex
+              rounded-full
+              bg-green-100
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-green-700
+            ">
+              Passed
+            </span>
           )}
 
           {status === 2 && (
-              <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
-                  Rejected
-              </span>
+            <span className="
+              inline-flex
+              rounded-full
+              bg-red-100
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-red-700
+            ">
+              Rejected
+            </span>
           )}
 
           {status === 3 && (
-              <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
-                  Executed
-              </span>
+            <span className="
+              inline-flex
+              rounded-full
+              bg-blue-100
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-blue-700
+            ">
+              Executed
+            </span>
           )}
 
           {status === 4 && (
-              <span className="rounded-full bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
-                  Quorum Not Reached
-              </span>
+            <span className="
+              inline-flex
+              rounded-full
+              bg-slate-200
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-slate-700
+            ">
+              Quorum Not Reached
+            </span>
           )}
 
         </div>
@@ -207,7 +272,13 @@ export default function ProposalDetailsModal({
 
         {/* Voting Countdown */}
 
-        <div className="mt-8 rounded-2xl border border-slate-200 p-5">
+        <div className="
+          mt-8
+          rounded-2xl
+          border
+          border-slate-200
+          p-5
+        ">
 
           <p className="text-sm text-slate-500">
             Voting Period
@@ -228,7 +299,7 @@ export default function ProposalDetailsModal({
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
-                Remaining before execution becomes available.
+                Remaining before voting closes.
               </p>
 
             </div>
@@ -237,16 +308,34 @@ export default function ProposalDetailsModal({
 
         </div>
 
+
+        {/* Voting History */}
+
         <div className="mt-10">
-          <h4 className="text-xl font-bold">
-            Voting History
-          </h4>
+
+          <div>
+            <h4 className="text-xl font-bold">
+              Voting History
+            </h4>
+
+            <p className="mt-1 text-sm text-slate-500">
+              See how community members voted and,
+              when applicable, why they voted no.
+            </p>
+          </div>
+
 
           <div className="mt-5 space-y-4">
 
             {votes.length === 0 ? (
 
-              <div className="rounded-xl bg-slate-50 p-5 text-slate-500">
+              <div className="
+                rounded-2xl
+                bg-slate-50
+                p-6
+                text-center
+                text-slate-500
+              ">
                 No votes yet.
               </div>
 
@@ -255,16 +344,29 @@ export default function ProposalDetailsModal({
               votes.map((vote, index) => (
 
                 <div
-                  key={index}
-                  className="rounded-2xl border p-5"
+                  key={`${vote.voter}-${vote.timestamp}-${index}`}
+                  className="
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-5
+                  "
                 >
-                  <div className="flex items-center justify-between">
 
-                    <div>
+                  {/* Voter + Vote */}
 
-                      <p className="font-semibold">
-                        {vote.voter.slice(0, 6)}...
-                        {vote.voter.slice(-4)}
+                  <div className="
+                    flex
+                    items-start
+                    justify-between
+                    gap-4
+                  ">
+
+                    <div className="min-w-0">
+
+                      <p className="font-semibold text-slate-900">
+                        {shorten(vote.voter)}
                       </p>
 
                       <p className="mt-1 text-sm text-slate-500">
@@ -275,28 +377,76 @@ export default function ProposalDetailsModal({
 
                     </div>
 
+
                     <span
-                      className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                        vote.support
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                      className={`
+                        shrink-0
+                        rounded-full
+                        px-3
+                        py-1
+                        text-sm
+                        font-semibold
+                        ${
+                          vote.support
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }
+                      `}
                     >
-                      {vote.support ? "YES" : "NO"}
+                      {vote.support
+                        ? "YES"
+                        : "NO"}
                     </span>
 
                   </div>
 
-                  {!vote.support && vote.reason && (
 
-                    <div className="mt-4 rounded-xl bg-slate-50 p-4">
-                      <p className="text-sm text-slate-500">
-                        Reason
+                  {/* NO Reason */}
+
+                  {!vote.support && (
+
+                    <div className="
+                      mt-5
+                      rounded-xl
+                      border
+                      border-red-100
+                      bg-red-50
+                      p-4
+                    ">
+
+                      <p className="
+                        text-xs
+                        font-bold
+                        uppercase
+                        tracking-wider
+                        text-red-600
+                      ">
+                        Reason for voting no
                       </p>
 
-                      <p className="mt-2 leading-relaxed">
-                        {vote.reason}
-                      </p>
+                      {vote.reason ? (
+
+                        <p className="
+                          mt-2
+                          leading-relaxed
+                          text-slate-700
+                        ">
+                          {vote.reason}
+                        </p>
+
+                      ) : (
+
+                        <p className="
+                          mt-2
+                          text-sm
+                          italic
+                          text-slate-500
+                        ">
+                          No reason provided.
+                        </p>
+
+                      )}
+
                     </div>
 
                   )}
@@ -308,7 +458,9 @@ export default function ProposalDetailsModal({
             )}
 
           </div>
+
         </div>
+
 
         {/* Supporting Document */}
 
@@ -337,7 +489,8 @@ export default function ProposalDetailsModal({
 
         )}
 
-        {/* Voting */}
+
+        {/* Voting Results */}
 
         <div className="mt-10">
 
@@ -345,31 +498,52 @@ export default function ProposalDetailsModal({
             Voting Results
           </h4>
 
-          <div className="mt-4 flex gap-4">
+          <div className="
+            mt-4
+            flex
+            flex-wrap
+            items-center
+            gap-3
+          ">
 
-            <div className="rounded-full bg-green-100 px-4 py-2 font-semibold text-green-700">
+            <div className="
+              rounded-full
+              bg-green-100
+              px-4
+              py-2
+              font-semibold
+              text-green-700
+            ">
               👍 Yes {proposal.yesVotes.toString()}
             </div>
 
-            <div className="rounded-full bg-red-100 px-4 py-2 font-semibold text-red-700">
+            <div className="
+              rounded-full
+              bg-red-100
+              px-4
+              py-2
+              font-semibold
+              text-red-700
+            ">
               👎 No {proposal.noVotes.toString()}
             </div>
 
-            {status === 1 && !proposal.executed && (
-              <ExecuteProposalButton
-                proposalId={proposal.id}
-                poolAddress={poolAddress}
-                onExecuted={() => {
-                  window.location.reload();
-                }}
-              />
-            )}
+            {status === 1 &&
+              !proposal.executed && (
+
+                <ExecuteProposalButton
+                  proposalId={proposal.id}
+                  poolAddress={poolAddress}
+                  onExecuted={() => {
+                    window.location.reload();
+                  }}
+                />
+
+              )}
 
           </div>
 
         </div>
-
-        
 
       </div>
     </div>

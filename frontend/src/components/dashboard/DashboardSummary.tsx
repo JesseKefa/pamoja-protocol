@@ -33,7 +33,7 @@ export default function DashboardSummary() {
     },
     {
       title: "Monthly Contributions",
-      value: `${summary.contributionCommitment} ETH`,
+      value: `${summary.monthlyCommitment} ETH`,
       description: "Your expected monthly commitment",
       icon: Repeat2,
     },

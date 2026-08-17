@@ -11,12 +11,11 @@ type Summary = {
   communities: number;
   pendingApplications: number;
   totalSaved: string;
-  contributionCommitment: string;
+  monthlyCommitment: string;
 };
 
-export function useDashboardSummary(): Summary {
+export function useDashboardSummary() {
   const { address } = useAccount();
-
   const publicClient = usePublicClient();
 
   const { communities } = useMyCommunities();
@@ -26,39 +25,40 @@ export function useDashboardSummary(): Summary {
     communities: 0,
     pendingApplications: 0,
     totalSaved: "0",
-    contributionCommitment: "0",
+    monthlyCommitment: "0",
   });
 
   useEffect(() => {
     if (!address || !publicClient) {
       setSummary({
-        communities: 0,
+        communities: communities.length,
         pendingApplications: applications.length,
         totalSaved: "0",
-        contributionCommitment: "0",
+        monthlyCommitment: "0",
       });
 
       return;
     }
 
-    let cancelled = false;
+    const client = publicClient;
+    const userAddress = address;
 
     async function load() {
       let totalSaved = 0n;
-      let contributionCommitment = 0n;
+      let monthlyCommitment = 0n;
 
       for (const community of communities) {
         try {
           const contribution =
-            (await publicClient.readContract({
+            (await client.readContract({
               address: community.poolAddress,
               abi: PoolABI.abi,
               functionName: "getContribution",
-              args: [address],
+              args: [userAddress],
             })) as bigint;
 
           const stats =
-            (await publicClient.readContract({
+            (await client.readContract({
               address: community.poolAddress,
               abi: PoolABI.abi,
               functionName: "getPoolStats",
@@ -69,35 +69,26 @@ export function useDashboardSummary(): Summary {
             };
 
           totalSaved += contribution;
-          contributionCommitment +=
-            stats.contributionAmount;
+          monthlyCommitment += stats.contributionAmount;
         } catch (error) {
           console.error(
-            `Failed to load community ${community.poolAddress}`,
+            `Failed to load dashboard data for ${community.name}:`,
             error
           );
         }
       }
 
-      if (cancelled) return;
-
       setSummary({
         communities: communities.length,
         pendingApplications: applications.length,
-        totalSaved: Number(
-          formatEther(totalSaved)
-        ).toFixed(3),
-        contributionCommitment: Number(
-          formatEther(contributionCommitment)
+        totalSaved: Number(formatEther(totalSaved)).toFixed(3),
+        monthlyCommitment: Number(
+          formatEther(monthlyCommitment)
         ).toFixed(3),
       });
     }
 
     load();
-
-    return () => {
-      cancelled = true;
-    };
   }, [
     address,
     publicClient,

@@ -17,6 +17,8 @@ export type Proposal = {
   recipient: `0x${string}`;
   amount: bigint;
 
+  evidenceURI: string;
+
   newContributionAmount: bigint;
   newAdmin: `0x${string}`;
 

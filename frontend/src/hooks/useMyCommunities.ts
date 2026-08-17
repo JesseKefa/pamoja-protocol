@@ -1,30 +1,24 @@
 import { useEffect, useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
 
-import { usePools } from "./usePools";
-
 import PoolABI from "@/contracts/Pool.json";
+import { usePools } from "./usePools";
 
 type Community = {
   id: number;
   name: string;
   treasury: bigint;
   members: number;
-  contribution: bigint;
-  contributionAmount: bigint;
   poolAddress: `0x${string}`;
 };
 
 export function useMyCommunities() {
   const { address } = useAccount();
-
   const publicClient = usePublicClient();
 
   const { pools } = usePools();
 
-  const [communities, setCommunities] = useState<
-    Community[]
-  >([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
 
   useEffect(() => {
     if (!address || !publicClient) {
@@ -32,7 +26,8 @@ export function useMyCommunities() {
       return;
     }
 
-    let cancelled = false;
+    const client = publicClient;
+    const userAddress = address;
 
     async function load() {
       const mine: Community[] = [];
@@ -40,17 +35,19 @@ export function useMyCommunities() {
       for (const pool of pools) {
         try {
           const isMember =
-            (await publicClient.readContract({
+            (await client.readContract({
               address: pool.poolAddress,
               abi: PoolABI.abi,
               functionName: "isMember",
-              args: [address],
+              args: [userAddress],
             })) as boolean;
 
-          if (!isMember) continue;
+          if (!isMember) {
+            continue;
+          }
 
           const stats =
-            (await publicClient.readContract({
+            (await client.readContract({
               address: pool.poolAddress,
               abi: PoolABI.abi,
               functionName: "getPoolStats",
@@ -60,42 +57,25 @@ export function useMyCommunities() {
               contributionAmount: bigint;
             };
 
-          const contribution =
-            (await publicClient.readContract({
-              address: pool.poolAddress,
-              abi: PoolABI.abi,
-              functionName: "getContribution",
-              args: [address],
-            })) as bigint;
-
           mine.push({
-            id: pool.id,
+            id: Number(pool.id),
             name: pool.name,
             treasury: stats.treasury,
             members: Number(stats.memberCount),
-            contribution,
-            contributionAmount:
-              stats.contributionAmount,
             poolAddress: pool.poolAddress,
           });
         } catch (error) {
           console.error(
-            `Failed to load community ${pool.poolAddress}`,
+            `Failed to load community ${pool.name}:`,
             error
           );
         }
       }
 
-      if (!cancelled) {
-        setCommunities(mine);
-      }
+      setCommunities(mine);
     }
 
     load();
-
-    return () => {
-      cancelled = true;
-    };
   }, [address, pools, publicClient]);
 
   return {
