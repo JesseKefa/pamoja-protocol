@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import ConnectWallet from "./ConnectWallet";
 import Container from "./ui/Container";
-import { switchToFuji } from "@/lib/switchToFuji";
+
 
 export default function Navbar() {
   return (
@@ -85,26 +85,7 @@ export default function Navbar() {
           </div>
 
           {/* WALLET */}
-
-          <button
-            onClick={async () => {
-              await switchToFuji();
-            }}
-            className="
-              rounded-xl
-              bg-[#1F4D36]
-              px-4
-              py-2
-              text-sm
-              font-semibold
-              text-white
-              transition
-              hover:opacity-90
-            "
-          >
-            Switch to Fuji
-          </button>
-          
+       
           <ConnectWallet />
 
         </nav>
