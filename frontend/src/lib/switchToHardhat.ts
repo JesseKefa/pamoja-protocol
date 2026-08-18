@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-export async function switchToHardhat() {
+export async function switchToFuji() {
   if (!window.ethereum) {
     alert("MetaMask is not installed.");
     return;
@@ -25,7 +25,7 @@ export async function switchToHardhat() {
   try {
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x7A69" }],
+      params: [{ chainId: "0xA869" }],
     });
   } catch (error: unknown) {
     const ethereumError = error as EthereumError;
@@ -35,14 +35,19 @@ export async function switchToHardhat() {
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainId: "0x7A69",
-            chainName: "Hardhat Local",
+            chainId: "0xA869",
+            chainName: "Avalanche Fuji Testnet",
             nativeCurrency: {
-              name: "Ethereum",
-              symbol: "ETH",
+              name: "Avalanche",
+              symbol: "AVAX",
               decimals: 18,
             },
-            rpcUrls: ["http://127.0.0.1:8545"],
+            rpcUrls: [
+              "https://api.avax-test.network/ext/bc/C/rpc",
+            ],
+            blockExplorerUrls: [
+              "https://testnet.snowtrace.io/",
+            ],
           },
         ],
       });

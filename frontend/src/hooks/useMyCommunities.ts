@@ -9,6 +9,7 @@ type Community = {
   name: string;
   treasury: bigint;
   members: number;
+  contribution: bigint;
   poolAddress: `0x${string}`;
 };
 
@@ -62,6 +63,7 @@ export function useMyCommunities() {
             name: pool.name,
             treasury: stats.treasury,
             members: Number(stats.memberCount),
+            contribution: stats.contributionAmount,
             poolAddress: pool.poolAddress,
           });
         } catch (error) {
