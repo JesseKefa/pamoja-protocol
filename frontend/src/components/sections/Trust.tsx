@@ -4,29 +4,15 @@ import { usePools } from "@/hooks/usePools";
 import Container from "../ui/Container";
 import { formatEther } from "viem";
 
-type Pool = {
-  id: bigint;
-  name: string;
-  description: string;
-  creator: `0x${string}`;
-  poolAddress: `0x${string}`;
-  createdAt: bigint;
-  isActive: boolean;
-  contributionAmount: bigint;
-};
-
 export default function Impact() {
   const { pools } = usePools();
 
   const communityCount = pools?.length ?? 0;
 
   const treasury =
-    pools?.reduce(
-      (total: bigint, pool: Pool) => {
-        return total + pool.contributionAmount;
-      },
-      0n
-    ) ?? 0n;
+    pools?.reduce((total: bigint, pool: any) => {
+      return total + BigInt(pool.contributionAmount);
+    }, BigInt(0)) ?? BigInt(0);
 
   const stats = [
     {
@@ -52,122 +38,149 @@ export default function Impact() {
       className="
         relative
         overflow-hidden
-        bg-[#081C15]
-        py-36
+        bg-[#061F17]
+        py-28
         text-white
       "
     >
-      {/* subtle glow */}
-
+      {/* Continuous gold atmosphere */}
       <div
         className="
+          pointer-events-none
           absolute
           left-1/2
-          top-0
-          h-[400px]
-          w-[400px]
+          bottom-[-280px]
+          h-[700px]
+          w-[900px]
           -translate-x-1/2
           rounded-full
           bg-[#C79A3B]/10
-          blur-3xl
+          blur-[150px]
+        "
+      />
+
+      {/* Subtle green atmosphere */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-[45%]
+          h-[500px]
+          w-[700px]
+          -translate-x-1/2
+          rounded-full
+          bg-[#1F4D36]/30
+          blur-[140px]
         "
       />
 
       <Container>
-        <div
-          className="
-            relative
-            mx-auto
-            max-w-4xl
-            text-center
-          "
-        >
-          <p
-            className="
-              text-sm
-              font-semibold
-              uppercase
-              tracking-[0.25em]
-              text-[#C79A3B]
-            "
-          >
-            Impact
-          </p>
+        <div className="relative z-10">
 
-          <h2
-            className="
-              mt-6
-              text-5xl
-              font-black
-              leading-tight
-              lg:text-6xl
-            "
-          >
-            A growing network
-            <br />
-            of community-owned finance.
-          </h2>
+          {/* Intro */}
 
-          <p
-            className="
-              mx-auto
-              mt-8
-              max-w-2xl
-              text-xl
-              leading-9
-              text-white/70
-            "
-          >
-            Every community strengthens the ecosystem.
-            Every contribution creates transparency.
-            Every member participates in shared ownership.
-          </p>
-        </div>
+          <div className="mx-auto max-w-3xl text-center">
 
-        <div
-          className="
-            relative
-            mt-24
-            grid
-            gap-8
-            md:grid-cols-2
-            xl:grid-cols-4
-          "
-        >
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
+            <p className="font-semibold uppercase tracking-[0.3em] text-[#C79A3B]">
+              IMPACT
+            </p>
+
+            <h2
               className="
-                border-t
-                border-white/20
-                pt-8
-                text-center
+                mt-5
+                text-5xl
+                font-black
+                tracking-tight
+                text-white
+                lg:text-6xl
               "
             >
-              <h3
-                className="
-                  text-6xl
-                  font-black
-                  tracking-tight
-                  text-[#C79A3B]
-                "
-              >
-                {stat.value}
-              </h3>
+              Building trust,
+              <br />
+              one community at a time.
+            </h2>
 
-              <p
+            <p
+              className="
+                mx-auto
+                mt-7
+                max-w-2xl
+                text-lg
+                leading-8
+                text-slate-300
+              "
+            >
+              Every community created strengthens the ecosystem.
+              Every contribution is visible.
+              Every member shares ownership.
+            </p>
+
+          </div>
+
+
+          {/* Stats */}
+
+          <div
+            className="
+              mt-20
+              grid
+              gap-10
+              md:grid-cols-2
+              xl:grid-cols-4
+            "
+          >
+
+            {stats.map((stat) => (
+
+              <div
+                key={stat.label}
                 className="
-                  mt-4
-                  text-lg
-                  text-white/70
+                  border-t
+                  border-white/20
+                  px-4
+                  pt-8
+                  text-center
                 "
               >
-                {stat.label}
-              </p>
-            </div>
-          ))}
+
+                <h3
+                  className="
+                    text-5xl
+                    font-black
+                    tracking-tight
+                    text-[#C79A3B]
+                    lg:text-6xl
+                  "
+                >
+                  {stat.value}
+                </h3>
+
+                <p
+                  className="
+                    mt-4
+                    text-base
+                    font-medium
+                    text-slate-300
+                  "
+                >
+                  {stat.label}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+
+          {/* Transition space */}
+
+          <div className="h-64" />
+
         </div>
       </Container>
+
     </section>
   );
 }
