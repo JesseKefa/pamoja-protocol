@@ -45,11 +45,14 @@ export function useProposals(
       return;
     }
 
+    const client = publicClient;
+    const address = poolAddress;
+
     setLoading(true);
 
     try {
-      const data = (await publicClient.readContract({
-        address: poolAddress,
+      const data = (await client.readContract({
+        address,
         abi: PoolABI.abi,
         functionName: "getProposals",
       })) as Proposal[];
@@ -70,12 +73,15 @@ export function useProposals(
       return;
     }
 
+    const client = publicClient;
+    const address = poolAddress;
+
     async function load() {
       setLoading(true);
 
       try {
-        const data = (await publicClient.readContract({
-          address: poolAddress,
+        const data = (await client.readContract({
+          address,
           abi: PoolABI.abi,
           functionName: "getProposals",
         })) as Proposal[];

@@ -1,6 +1,5 @@
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { usePools } from "./usePools";
-import { usePublicClient } from "wagmi";
 import { useEffect, useState } from "react";
 
 import PoolABI from "@/contracts/Pool.json";
@@ -21,7 +20,13 @@ export function usePendingCommunities() {
   >([]);
 
   useEffect(() => {
-    if (!address || !publicClient) return;
+    if (!address || !publicClient) {
+      setApplications([]);
+      return;
+    }
+
+    const client = publicClient;
+    const userAddress = address;
 
     async function load() {
       const pending: PendingCommunity[] = [];
@@ -29,17 +34,17 @@ export function usePendingCommunities() {
       for (const pool of pools) {
         try {
           const hasPending =
-            (await publicClient.readContract({
+            (await client.readContract({
               address: pool.poolAddress,
               abi: PoolABI.abi,
               functionName: "hasPendingRequest",
-              args: [address],
+              args: [userAddress],
             })) as boolean;
 
           if (!hasPending) continue;
 
           pending.push({
-            id: pool.id,
+            id: Number(pool.id),
             name: pool.name,
           });
         } catch {
