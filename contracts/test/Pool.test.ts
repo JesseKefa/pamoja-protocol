@@ -31,10 +31,10 @@ describe("Pool Lending Lifecycle", function () {
 
     // Fund the treasury.
     await pool.contribute({
-    value: contribution,
+      value: contribution,
     });
 
-    await pool.connect(borrower).contribute({   
+    await pool.connect(borrower).contribute({
       value: contribution,
     });
   }
@@ -116,7 +116,7 @@ describe("Pool Lending Lifecycle", function () {
   });
 
   it("should accrue late interest after the deadline", async function () {
-    const deadline = await createActiveLoan();
+    await createActiveLoan();
 
     await ethers.provider.send("evm_increaseTime", [
       2 * 86400
@@ -147,14 +147,14 @@ describe("Pool Lending Lifecycle", function () {
       value: ethers.parseEther("0.52")
     });
 
-    let amounts = await pool.getLoanAmountsDue(1);
+    const amounts = await pool.getLoanAmountsDue(1);
 
     expect(amounts.principalOutstanding).to.be.lt(principal);
     expect(amounts.totalOutstanding).to.be.gt(0);
 
-    // Pay the exact remaining balance.
+    // Pay the remaining balance with a small buffer.
     await pool.connect(borrower).repayLoan(1, {
-    value: amounts.totalOutstanding + ethers.parseEther("0.001")
+      value: amounts.totalOutstanding + ethers.parseEther("0.001")
     });
 
     const loan = await pool.getLoan(1);
@@ -162,8 +162,35 @@ describe("Pool Lending Lifecycle", function () {
     expect(loan.status).to.equal(3);
     expect(loan.principalRepaid).to.equal(principal);
 
-    expect(
-      loan.interestPaid
-    ).to.equal(loan.accruedInterest);
+    expect(loan.interestPaid).to.equal(loan.accruedInterest);
+  });
+
+  it("should mark a loan as rejected when its proposal is rejected", async function () {
+    const latestBlock = await ethers.provider.getBlock("latest");
+    const deadline = latestBlock!.timestamp + 86400;
+
+    await pool.connect(borrower).createLoanProposal(
+      "Emergency Loan",
+      "Emergency financial assistance",
+      "",
+      principal,
+      deadline,
+      100
+    );
+
+    // Owner votes NO.
+    await pool.connect(owner).voteProposal(
+      1,
+      false,
+      "Insufficient justification"
+    );
+
+    // Proposal should be rejected.
+    expect(await pool.getProposalStatus(1)).to.equal(2);
+
+    // Associated loan should also be rejected.
+    const loan = await pool.getLoan(1);
+
+    expect(loan.status).to.equal(4);
   });
 });

@@ -17,7 +17,8 @@ contract Pool {
 
     uint256 public constant QUORUM_PERCENT = 50;
     uint256 public constant VOTING_PERIOD = 3 days;
-    uint256 public constant DEFAULT_GRACE_PERIOD = 30 days;
+    uint256 public constant MIN_GRACE_PERIOD = 1 days;
+    uint256 public constant MAX_GRACE_PERIOD = 90 days;
     uint256 public constant MAX_LATE_INTEREST_RATE = 100;
     uint256 public constant BASIS_POINTS = 10_000;
 
@@ -147,6 +148,7 @@ contract Pool {
 
         uint256 createdAt;
         uint256 repaymentDeadline;
+        uint256 gracePeriod;
 
         // Basis points per day.
         // 100 = 1% per day.
@@ -493,6 +495,18 @@ contract Pool {
             msg.sender,
             support
         );
+
+        // Synchronise rejected loan proposals with their loan records.
+        if (
+            proposal.proposalType == ProposalType.LoanRequest &&
+            getProposalStatus(proposalId) == ProposalStatus.Rejected
+        ) {
+            Loan storage loan = loans[proposal.loanId];
+
+            if (loan.status == LoanStatus.Pending) {
+                loan.status = LoanStatus.Rejected;
+            }
+        }
     }
 
     function requiredQuorumVotes()
@@ -623,6 +637,7 @@ contract Pool {
         string memory evidenceURI,
         uint256 principal,
         uint256 repaymentDeadline,
+        uint256 gracePeriod,
         uint256 lateInterestRate
     ) public onlyMember {
         require(
@@ -638,6 +653,12 @@ contract Pool {
         require(
             repaymentDeadline > block.timestamp,
             "Invalid repayment deadline"
+        );
+
+        require(
+            gracePeriod >= MIN_GRACE_PERIOD &&
+            gracePeriod <= MAX_GRACE_PERIOD,
+            "Invalid grace period"
         );
 
         require(
@@ -676,6 +697,7 @@ contract Pool {
             purpose: purpose,
             createdAt: block.timestamp,
             repaymentDeadline: repaymentDeadline,
+            gracePeriod: gracePeriod,
             lateInterestRate: lateInterestRate,
             approvedAt: 0,
             disbursedAt: 0,
@@ -929,7 +951,7 @@ contract Pool {
 
         require(
             block.timestamp >=
-                loan.repaymentDeadline + DEFAULT_GRACE_PERIOD,
+                loan.repaymentDeadline + loan.gracePeriod,
             "Grace period not completed"
         );
 
